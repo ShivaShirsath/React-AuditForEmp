@@ -9,6 +9,7 @@ const EmployeeForm = () => {
   const { id } = useParams();
   const isEdit = id !== undefined;
   const [error, setError] = useState(null);
+  const [isDone, setIsDone] = useState(null);
   const [countries, setCountries] = useState([]);
   const [isFormValid, setIsFormValid] = useState(false);
   const [employee, setEmployee] = useState({
@@ -82,7 +83,7 @@ const EmployeeForm = () => {
         } else {
           await api.post('/emp', employee);
         }
-        <Navigate to={'/'} />
+        setIsDone(true);
       } catch (error) {
         console.error("Error submitting employee:", error.response.data.title);
         setError('Employee: ' + error.response.data.title);
@@ -102,6 +103,10 @@ const EmployeeForm = () => {
 
   if (isEdit && employee.name === '') {
     return <>{error}</>;
+  }
+
+  if (isDone) {
+    return <Navigate to="/" />;
   }
 
   return (

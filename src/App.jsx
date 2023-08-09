@@ -3,6 +3,8 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import EmployeeList from './components/EmployeeList';
 import EmployeeDetails from './components/EmployeeDetails';
 import EmployeeForm from './components/EmployeeForm';
+import AuditLog from './components/AuditLog';
+import { Link } from 'react-router-dom';
 
 function App() {
   return (
@@ -18,10 +20,10 @@ function App() {
             <div className="navbar-collapse collapse d-sm-inline-flex justify-content-between">
               <ul className="navbar-nav flex-grow-1 fw-bolder">
                 <li className="nav-item">
-                  <a className="nav-link text-success" href='/'>Employee</a>
+                  <Link className="nav-link text-success" to={'/'}>Employee</Link>
                 </li>
                 <li className="nav-item">
-                  <a className="nav-link text-warning " href='/audit'>Audit Log</a>
+                  <Link className="nav-link text-warning " to={'/audit'}>Audit Log</Link>
                 </li>
               </ul>
             </div>
@@ -52,6 +54,11 @@ function App() {
             path="/add"
             element={
               <EmployeeForm />
+            }
+          /><Route
+            path="/audit"
+            element={
+              <AuditLog />
             }
           />
           <Route path="*" element={<Navigate to="/" />} />

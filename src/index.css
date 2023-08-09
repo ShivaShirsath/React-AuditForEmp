@@ -11,6 +11,7 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+  --bs-code-color: gray !important;
 }
 
 body {
@@ -19,33 +20,6 @@ body {
   height: 100vh;
   height: 100dvh;
   margin: 0;
-}
-
-html {
-  font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
-body {
-  margin-bottom: 60px;
-}
-
-html,
-body {
-  display: flex !important;
-  flex-direction: column !important;
-  position: absolute !important;
-  inset: 0 !important;
 }
 
 header,
@@ -66,10 +40,79 @@ footer {
   bottom: 0;
 }
 
-thead {
-  border-bottom: solid;
-}
 
 th + td:not(:has(input, select, svg))::before {
   content: ' : ';
+}
+
+details,
+input {
+  border-radius: 2.5vmin;
+  border-radius: 2.5dvmin;
+}
+
+details {
+  padding: .5vmin;
+  padding: .5dvmin;
+}
+
+details > summary {
+  cursor: pointer;
+}
+
+ul {
+  margin-block: 0;
+}
+
+li {
+  list-style-type: '⎚ ';
+}
+
+li:has(details),
+li.nav-item {
+  list-style: none;
+}
+
+input[ type="datetime-local"] {
+  color: currentColor;
+  border: .005vmin solid currentColor;
+  border: .005dvmin solid currentColor;
+  text-align: center;
+}
+
+code {
+  font-family: 'Courier New';
+  color: currentColor;
+}
+
+#mainLog {
+  display: flex;
+}
+
+details:has(#mainLog) {
+  border: .005vmin solid tomato;
+  border: .005dvmin solid tomato;
+}
+
+details:has(#mainLog) > * {
+  margin: .5vmin;
+  margin: .5dvmin;
+}
+
+details > summary::before {
+  content: "▷";
+  margin-right: .5vmin;
+  margin-right: .5dvmin;
+}
+
+details[open] > summary::before {
+  content: "▽";
+}
+
+summary {
+  list-style: none;
+}
+
+thead>tr {
+  border-bottom: solid;
 }
