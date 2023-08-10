@@ -11,6 +11,8 @@ const EmployeeForm = () => {
   const [error, setError] = useState(null);
   const [isDone, setIsDone] = useState(null);
   const [countries, setCountries] = useState([]);
+  const [states, setStates] = useState([]);
+  const [cities, setCities] = useState([]);
   const [isFormValid, setIsFormValid] = useState(false);
   const [employee, setEmployee] = useState({
     name: '',
@@ -37,6 +39,7 @@ const EmployeeForm = () => {
       fetchEmployee();
     }
   }, [id, isEdit]);
+
   useEffect(() => {
     async function fetchCountries() {
       try {
@@ -46,9 +49,33 @@ const EmployeeForm = () => {
         console.error("Error fetching countries:", error);
       }
     }
+
     fetchCountries();
+    if (isEdit) {
+      fetchStates(employee.address.country);
+      fetchCities(employee.address.state);
+    }
+
     $('#employeeForm').validate();
   }, []);
+
+  async function fetchStates(countryName) {
+    try {
+      const response = await api.get(`/emp/states${countryName === "India" ? "?country_name=" + countryName : ""}`);
+      setStates(response.data);
+    } catch (error) {
+      console.error("Error fetching states:", error);
+    }
+  }
+
+  async function fetchCities(stateName) {
+    try {
+      const response = await api.get(`/emp/cities${stateName === "Maharashtra" || stateName === "Telangana" ? "?state_name=" + stateName : ""}`);
+      setCities(response.data);
+    } catch (error) {
+      console.error("Error fetching cities:", error);
+    }
+  }
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -127,12 +154,11 @@ const EmployeeForm = () => {
                   value={employee.name}
                   onChange={handleInputChange}
                   className="form-control"
-                  placeholder="[First Name] [Middle Name] [SurName]"
+                  placeholder="Full Name"
                   required
                   minLength="3"
                   maxLength="20"
                 />
-                <span className="text-danger" data-valmsg-for="Name"></span>
               </td>
             </tr>
             <tr>
@@ -146,13 +172,12 @@ const EmployeeForm = () => {
                   value={employee.phone}
                   onChange={handleInputChange}
                   className="form-control"
-                  placeholder="XXXXXXXXXX"
+                  placeholder="Phone / Mobile"
                   required
                   pattern="^\d{10}$"
                   minLength="10"
                   maxLength="15"
                 />
-                <span className="text-danger" data-valmsg-for="Phone"></span>
               </td>
             </tr>
             <tr>
@@ -163,7 +188,10 @@ const EmployeeForm = () => {
                 <select
                   name="address.country"
                   value={employee.address.country}
-                  onChange={handleInputChange}
+                  onChange={(e) => {
+                    handleInputChange(e);
+                    fetchStates(e.target.value);
+                  }}
                   className="form-control"
                   id="countryDropdown"
                   required
@@ -175,7 +203,6 @@ const EmployeeForm = () => {
                     </option>
                   ))}
                 </select>
-                <span className="text-danger" data-valmsg-for="Address.Country"></span>
               </td>
             </tr>
             <tr>
@@ -183,17 +210,23 @@ const EmployeeForm = () => {
                 State
               </th>
               <td>
-                <input
-                  type="text"
+                <select
                   name="address.state"
                   value={employee.address.state}
-                  onChange={handleInputChange}
+                  onChange={(e) => {
+                    handleInputChange(e);
+                    fetchCities(e.target.value);
+                  }}
                   className="form-control"
-                  placeholder="State (Full Name of State)"
                   required
-                  minLength="3"
-                />
-                <span className="text-danger" data-valmsg-for="Address.State"></span>
+                >
+                  <option value="" disabled>--Select a State--</option>
+                  {states.map((state) => (
+                    <option key={state.state_name} value={state.state_name}>
+                      {state.state_name}
+                    </option>
+                  ))}
+                </select>
               </td>
             </tr>
             <tr>
@@ -201,17 +234,20 @@ const EmployeeForm = () => {
                 City
               </th>
               <td>
-                <input
-                  type="text"
+                <select
                   name="address.city"
                   value={employee.address.city}
                   onChange={handleInputChange}
                   className="form-control"
-                  placeholder="City / Nearby City"
                   required
-                  minLength="3"
-                />
-                <span className="text-danger" data-valmsg-for="Address.City"></span>
+                >
+                  <option value="" disabled>--Select a City--</option>
+                  {cities.map((city) => (
+                    <option key={city.city_name} value={city.city_name}>
+                      {city.city_name}
+                    </option>
+                  ))}
+                </select>
               </td>
             </tr>
             <tr>
@@ -229,7 +265,6 @@ const EmployeeForm = () => {
                   required
                   minLength="6"
                 />
-                <span className="text-danger" data-valmsg-for="Address.ZipCode"></span>
               </td>
             </tr>
             <tr>

@@ -26,7 +26,6 @@ header,
 footer {
   inset-inline: 0;
   background-color: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(.5vmin);
   backdrop-filter: blur(.5dvmin);
 }
 
@@ -38,6 +37,7 @@ header {
 footer {
   position: fixed !important;
   bottom: 0;
+  padding: 2.5dvmin;
 }
 
 
@@ -47,12 +47,10 @@ th + td:not(:has(input, select, svg))::before {
 
 details,
 input {
-  border-radius: 2.5vmin;
   border-radius: 2.5dvmin;
 }
 
 details {
-  padding: .5vmin;
   padding: .5dvmin;
 }
 
@@ -75,7 +73,6 @@ li.nav-item {
 
 input[ type="datetime-local"] {
   color: currentColor;
-  border: .005vmin solid currentColor;
   border: .005dvmin solid currentColor;
   text-align: center;
 }
@@ -90,18 +87,15 @@ code {
 }
 
 details:has(#mainLog) {
-  border: .005vmin solid tomato;
   border: .005dvmin solid tomato;
 }
 
 details:has(#mainLog) > * {
-  margin: .5vmin;
   margin: .5dvmin;
 }
 
 details > summary::before {
   content: "▷";
-  margin-right: .5vmin;
   margin-right: .5dvmin;
 }
 
@@ -115,4 +109,28 @@ summary {
 
 thead>tr {
   border-bottom: solid;
+}
+
+.error {
+  color: red;
+}
+
+td:has(input, select){
+  position: relative;
+}
+
+td:has(input, select)>label{
+  position: absolute;
+  inset-block: 10%;
+  inset-inline-end: -25%;
+  background-color: gray;
+  opacity: .85;
+  border-radius: 1.125dvmin;
+  padding: .5dvmin;
+}
+
+#loading{
+  position: absolute;
+  top: 25%;
+  aspect-ratio: 1;
 }
