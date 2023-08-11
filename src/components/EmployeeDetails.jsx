@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../utils/api';
 import { useParams, Navigate, Link } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 
 function EmployeeDetails() {
   const { id } = useParams();
@@ -17,6 +18,7 @@ function EmployeeDetails() {
       } catch (error) {
         console.error("Error fetching employee:", error.response.data.title);
         setError('Employee: ' + error.response.data.title);
+        toast.error(error);
       }
     }
     fetchEmployee();
@@ -25,10 +27,25 @@ function EmployeeDetails() {
   const handleDelete = async () => {
     try {
       await api.delete(`/emp/${id}`);
+      toast((t) => (
+        <span>
+          Employee Removed !
+          <button style={{
+            border: 'none',
+            backgroundColor: 'transparent'
+          }} onClick={() => {
+            toast.dismiss(t.id);
+          }}
+          >
+            ❌
+          </button>
+        </span>
+      ));
       setIsDeleted(true);
     } catch (error) {
       console.error("Error deleting employee:", error.response.data.title);
       setError('Error deleting employee: ' + error.response.data.title);
+      toast.error(error);
     }
   };
 

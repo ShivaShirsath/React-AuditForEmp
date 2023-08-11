@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../utils/api';
+import Loader from '../assets/Loader';
 
 const AuditLog = () => {
   const [auditLog, setAuditLog] = useState([]);
@@ -13,6 +14,7 @@ const AuditLog = () => {
         setAuditLog(response.data);
       } catch (error) {
         console.error("Error fetching audit log:", error);
+        toast.error("Error fetching audit logs");
       }
       setIsLoading(false);
     }
@@ -57,11 +59,8 @@ const AuditLog = () => {
   };
 
   return (
-    isLoading ? <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="50%" cy="50%" r="10%" fill="none" stroke="black" strokeWidth="2">
-        <animate attributeName="stroke-dasharray" from="0 25" to="25 0" dur="1s" repeatCount="indefinite" />
-      </circle>
-    </svg>
+    isLoading ?
+      <dialog open><Loader /></dialog>
       : <div>
         <h1 align="center">Audit Log</h1>
         <table className="table w-100">

@@ -4,6 +4,8 @@ import api from '../utils/api';
 import $ from 'jquery';
 import 'jquery-validation';
 import 'jquery-validation-unobtrusive';
+import { toast } from 'react-hot-toast';
+import Loader from '../assets/Loader';
 
 const EmployeeForm = () => {
   const { id } = useParams();
@@ -34,6 +36,7 @@ const EmployeeForm = () => {
         } catch (error) {
           console.error("Error fetching employee:", error);
           setError('Employee with id ' + id + " is " + error.response.data.title);
+          toast.error(error);
         }
       }
       fetchEmployee();
@@ -47,6 +50,7 @@ const EmployeeForm = () => {
         setCountries(response.data);
       } catch (error) {
         console.error("Error fetching countries:", error);
+        toast.error("Error fetching countries");
       }
     }
 
@@ -65,6 +69,7 @@ const EmployeeForm = () => {
       setStates(response.data);
     } catch (error) {
       console.error("Error fetching states:", error);
+      toast.error("Error fetching states");
     }
   }
 
@@ -74,6 +79,7 @@ const EmployeeForm = () => {
       setCities(response.data);
     } catch (error) {
       console.error("Error fetching cities:", error);
+      toast.error("Error fetching cities");
     }
   }
 
@@ -107,13 +113,48 @@ const EmployeeForm = () => {
       try {
         if (isEdit) {
           await api.put(`/emp/${id}`, employee);
+          //  toast.success(`Employee Details Updated !`);
+          toast((t) => (
+            <span>
+              Employee Details Updated !
+              <button style={{
+                border: 'none',
+                backgroundColor: 'transparent'
+              }} onClick={() => {
+                toast.dismiss(t.id);
+              }}
+              >
+                ❌
+              </button>
+            </span>
+          ));
         } else {
           await api.post('/emp', employee);
+          // toast.success(`Employee Created !`);
+          toast((t) => (
+            <span>
+              Employee Created !
+              <button style={{
+                border: 'none',
+                backgroundColor: 'transparent'
+              }} onClick={() => {
+                toast.dismiss(t.id);
+              }}
+              >
+                ❌
+              </button>
+            </span>
+          ));
         }
-        setIsDone(true);
+        document.querySelector("dialog").showModal();
+        setTimeout(() => {
+          document.querySelector("dialog").close();
+          setIsDone(true);
+        }, 2000);
       } catch (error) {
         console.error("Error submitting employee:", error.response.data.title);
         setError('Employee: ' + error.response.data.title);
+        toast.error(error);
       }
     }
   };
@@ -128,7 +169,7 @@ const EmployeeForm = () => {
     }
   };
 
-  if (isEdit && employee.name === '') {
+  if (isEdit && !employee) {
     return <>{error}</>;
   }
 
@@ -138,7 +179,9 @@ const EmployeeForm = () => {
 
   return (
     <div>
-      <h2>{isEdit ? 'Edit Employee' : 'Add Employee'}</h2>
+      <dialog>
+        <Loader />
+      </dialog><h2>{isEdit ? 'Edit Employee' : 'Add Employee'}</h2>
       <form id="employeeForm" onSubmit={handleSubmit}>
         <input type="hidden" name='EmployeeID' />
         <table>
@@ -297,6 +340,7 @@ const EmployeeForm = () => {
             </tr>
           </tbody>
         </table>
+
       </form>
     </div>
   );

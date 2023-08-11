@@ -5,10 +5,26 @@ import EmployeeDetails from './components/EmployeeDetails';
 import EmployeeForm from './components/EmployeeForm';
 import AuditLog from './components/AuditLog';
 import { Link } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   return (
     <>
+      <Toaster
+        position="top-center"
+        reverseOrder={false}
+        gutter={2}
+        toastOp
+        tions={{
+          icon: "✅",
+          style: {
+            borderRadius: "1.5dvmin",
+            background: "hsla(0, 0%, 0%, 0.5)",
+            backdropFilter: "blur(.25dvmin)",
+            color: "#fff",
+          },
+        }}
+      />
       <header>
         <nav className="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark border-bottom box-shadow mb-3 text-white">
           <div className="container-fluid">

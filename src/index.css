@@ -26,7 +26,7 @@ header,
 footer {
   inset-inline: 0;
   background-color: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(.5dvmin);
+  backdrop-filter: blur(0.5dvmin);
 }
 
 header {
@@ -40,9 +40,8 @@ footer {
   padding: 2.5dvmin;
 }
 
-
 th + td:not(:has(input, select, svg))::before {
-  content: ' : ';
+  content: " : ";
 }
 
 details,
@@ -51,7 +50,7 @@ input {
 }
 
 details {
-  padding: .5dvmin;
+  padding: 0.5dvmin;
 }
 
 details > summary {
@@ -63,7 +62,7 @@ ul {
 }
 
 li {
-  list-style-type: '⎚ ';
+  list-style-type: "⎚ ";
 }
 
 li:has(details),
@@ -71,14 +70,14 @@ li.nav-item {
   list-style: none;
 }
 
-input[ type="datetime-local"] {
+input[type="datetime-local"] {
   color: currentColor;
-  border: .005dvmin solid currentColor;
+  border: 0.005dvmin solid currentColor;
   text-align: center;
 }
 
 code {
-  font-family: 'Courier New';
+  font-family: "Courier New";
   color: currentColor;
 }
 
@@ -87,16 +86,16 @@ code {
 }
 
 details:has(#mainLog) {
-  border: .005dvmin solid tomato;
+  border: 0.005dvmin solid tomato;
 }
 
 details:has(#mainLog) > * {
-  margin: .5dvmin;
+  margin: 0.5dvmin;
 }
 
 details > summary::before {
   content: "▷";
-  margin-right: .5dvmin;
+  margin-right: 0.5dvmin;
 }
 
 details[open] > summary::before {
@@ -107,7 +106,7 @@ summary {
   list-style: none;
 }
 
-thead>tr {
+thead > tr {
   border-bottom: solid;
 }
 
@@ -115,22 +114,35 @@ thead>tr {
   color: red;
 }
 
-td:has(input, select){
+td:has(input, select) {
   position: relative;
 }
 
-td:has(input, select)>label{
+td:has(input, select) > label {
   position: absolute;
   inset-block: 10%;
   inset-inline-end: -25%;
-  background-color: gray;
-  opacity: .85;
+  background-color: gainsboro;
+  opacity: 0.75;
   border-radius: 1.125dvmin;
-  padding: .5dvmin;
+  padding: 0.5dvmin;
 }
 
-#loading{
+#loading {
   position: absolute;
   top: 25%;
   aspect-ratio: 1;
+}
+
+dialog::backdrop {
+  background: black;
+  opacity: 0.5;
+}
+
+dialog {
+  background: transparent;
+  border: none;
+  width: 100dvmin;
+  aspect-ratio: 1;
+  overflow: hidden;
 }

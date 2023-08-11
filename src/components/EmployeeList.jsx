@@ -28,7 +28,7 @@ function EmployeeList() {
           <tr>
             <th>ID</th>
             <th>Name</th>
-            <th className="text-center">Operations</th>
+            <th className="text-center">Actions</th>
           </tr>
         </thead>
         <tbody>
