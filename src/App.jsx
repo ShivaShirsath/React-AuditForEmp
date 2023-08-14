@@ -1,7 +1,6 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import EmployeeList from './components/EmployeeList';
-import EmployeeDetails from './components/EmployeeDetails';
 import EmployeeForm from './components/EmployeeForm';
 import AuditLog from './components/AuditLog';
 import { Link } from 'react-router-dom';
@@ -52,12 +51,6 @@ function App() {
             path="/"
             element={
               <EmployeeList />
-            }
-          />
-          <Route
-            path="/:id"
-            element={
-              <EmployeeDetails />
             }
           />
           <Route
