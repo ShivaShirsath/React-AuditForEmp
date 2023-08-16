@@ -40,7 +40,7 @@ const AuditLog = () => {
         );
       }
       else {
-          if (
+        if (
           key === "EmployeeId" ||
           key === "Name" ||
           key === "Phone" ||
@@ -49,36 +49,58 @@ const AuditLog = () => {
           key === "City" ||
           key === "State" ||
           key === "ZipCode" ||
-          key === "Country" 
-          ) 
-            return (
-              <li key={key} >
-          <b>
-            <code>{key} : </code>
-          </b>
-          <code style={{ wordBreak: "break-all" }}>{data[key]}</code>
-        </li >
-          
-        );
+          key === "Country"
+        )
+          return (
+            <li key={key} >
+              <b>
+                <code>{key} : </code>
+              </b>
+              <code style={{ wordBreak: "break-all" }}>{data[key]}</code>
+            </li >
+
+          );
       }
     }
     );
   };
+
+  const createNestedTable = (dt) => {
+    const data = JSON.parse(dt);
+    console.log();
+    const keys = Object.keys(data.Action.ActionParameters);
+
+    return (
+      <table className="table">
+        <tbody>
+          {keys.map((key) => (
+            <tr key={key}>
+              <td>
+                <b>{key}</b>
+              </td>
+              <td>{typeof data[key] === "object" && data[key] !== null ? createNestedTable(data[key]) : data[key]}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    );
+  };
+
+
 
   return isLoading ? (
     <dialog open>
       <Loader />
     </dialog>
   ) : (
-    <>
-      <h1 align="center">Audit Log</h1>
-      <table className="table w-100">
+        <table className="table w-100">
+          <thead><tr><th colSpan={4}><h1 align="center">Audit Log</h1></th></tr></thead>
         <thead>
           <tr>
             <th>Event ID</th>
-            <th className="text-center">Last Updated Date</th>
+            {/* <th className="text-center">Last Updated Date</th>
             <th>User</th>
-            <th className="text-center">Logs</th>
+            <th className="text-center">Logs</th> */}
           </tr>
         </thead>
         <tbody>
@@ -105,7 +127,7 @@ const AuditLog = () => {
                     })`,
                 }}
               >
-                <td>{item.eventId}</td>
+                {/* <td>{item.eventId}</td> 
                 <td>
                   <input
                     className="fw-bolder"
@@ -114,18 +136,25 @@ const AuditLog = () => {
                     disabled
                   />
                 </td>
-                <td>{item.user}</td>
+                <td>{item.user}</td> */}
+                {/* <td>
+                  {/ <details className="m-0 p-0">
+                    <summary id="mainLog">JSON Data</summary> */}
+                    {/* <ul>{createNestedTable(JSON.parse(item.jsonData), item.eventType)}</ul> */}
+                  {/* </details> /}
+                </td> */}
+
                 <td>
-                  <details className="m-0 p-0">
-                    <summary id="mainLog">JSON Data</summary>
-                    <ul>{createCollapsibleList(JSON.parse(item.jsonData), item.eventType)}</ul>
-                  </details>
+                  {
+                    createNestedTable(item.jsonData)
+                  }
                 </td>
+
+                {/* <td>{createNestedTable(JSON.parse(item.jsonData))}</td> */}
               </tr>
             ))}
         </tbody>
       </table>
-    </>
   );
 };
 
