@@ -26,7 +26,7 @@ function App() {
       />
       <header>
         <nav className="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark border-bottom box-shadow mb-3 text-white">
-          <div className="container-fluid">
+          <div className="container">
             <a className="navbar-brand border-end" href='/'>Employee Audit &nbsp;</a>
             <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
               aria-expanded="false" aria-label="Toggle navigation">

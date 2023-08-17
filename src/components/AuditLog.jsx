@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import api from "../utils/api";
 import { Loader } from "../assets/Loader";
+import "./Audit.css";
 
 const AuditLog = () => {
   const [auditLog, setAuditLog] = useState([]);
@@ -21,94 +22,55 @@ const AuditLog = () => {
     return `${istDateTime.getUTCFullYear()}-${String(istDateTime.getUTCMonth() + 1).padStart(2, "0")}-${String(istDateTime.getUTCDate()).padStart(2, "0")}T${String(istDateTime.getUTCHours()).padStart(2, "0")}:${String(istDateTime.getUTCMinutes()).padStart(2, "0")}`;
   };
 
-  const createCollapsibleList = (data, eventType) => {
-    const keys = Object.keys(data);
-    return keys.map((key) => {
-      if (eventType === "EmployeeApi/Update" && key === "ActionParameter") {
-        return <></>
-      }
-      else if (typeof data[key] === "object" && data[key] !== null) {
-        return (
-          <details style={{ padding: 0 }} key={key}>
-            <summary>
-              <b>
-                <code>{key}</code>
-              </b>
-            </summary>
-            <ul>{createCollapsibleList(data[key], eventType)}</ul>
-          </details>
-        );
-      }
-      else {
-        if (
-          key === "EmployeeId" ||
-          key === "Name" ||
-          key === "Phone" ||
-          key === "Address" ||
-          key === "AddressId" ||
-          key === "City" ||
-          key === "State" ||
-          key === "ZipCode" ||
-          key === "Country"
-        )
-          return (
-            <li key={key} >
-              <b>
-                <code>{key} : </code>
-              </b>
-              <code style={{ wordBreak: "break-all" }}>{data[key]}</code>
-            </li >
-
-          );
-      }
+  const createNestedTable = (data) => {
+    if (typeof data !== 'undefined') {
+      return Object.keys(data).map((key) => {
+        if (key === '0' || key === '1') return <tr><td></td>{createNestedTable(data[key])}</tr>
+        if (typeof data[key] === "object")
+          return createNestedTable(data[key]);
+        else return <dt id={key}>{data[key]}</dt>;
+      });
     }
-    );
   };
-
-  const createNestedTable = (dt) => {
-    const data = JSON.parse(dt);
-    console.log();
-    const keys = Object.keys(data.Action.ActionParameters);
-
-    return (
-      <table className="table">
-        <tbody>
-          {keys.map((key) => (
-            <tr key={key}>
-              <td>
-                <b>{key}</b>
-              </td>
-              <td>{typeof data[key] === "object" && data[key] !== null ? createNestedTable(data[key]) : data[key]}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    );
-  };
-
-
 
   return isLoading ? (
     <dialog open>
       <Loader />
     </dialog>
   ) : (
-        <table className="table w-100">
-          <thead><tr><th colSpan={4}><h1 align="center">Audit Log</h1></th></tr></thead>
-        <thead>
-          <tr>
-            <th>Event ID</th>
-            {/* <th className="text-center">Last Updated Date</th>
-            <th>User</th>
-            <th className="text-center">Logs</th> */}
-          </tr>
-        </thead>
-        <tbody>
+    <div id="audit"><h1 style={{
+      textAlign: "center"
+    }}>Audit Log</h1>
+      <table>
+
+        <tr style={{
+          borderBottom: 'solid'
+          }}>
+            <input
+              className="fw-bolder bg-transparent text-black border-0 px-4"
+              type="text"
+              value={"Modified Time"}
+              disabled
+            />
+            <td></td>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Phone</th>
+          <th>City</th>
+          <th>State</th>
+          <th>PIN Code</th>
+          <th>Country</th>
+        </tr>
+
+      </table>
+      <table className="table w-100">
+        <tbody className="w-100">
           {auditLog
             .slice()
             .reverse()
             .map((item) => (
               <tr
+                className={item.eventType === "EmployeeApi/Update" ? "update" : ""}
                 key={item.eventId}
                 style={{
                   "--bs-table-color": `var(--bs-${item.eventType === "POST Employees/Create" ||
@@ -127,34 +89,28 @@ const AuditLog = () => {
                     })`,
                 }}
               >
-                {/* <td>{item.eventId}</td> 
-                <td>
-                  <input
-                    className="fw-bolder"
-                    type="datetime-local"
-                    value={convertUTCToIST(item.jsonData)}
-                    disabled
-                  />
-                </td>
-                <td>{item.user}</td> */}
+                {/* <td>{item.eventId}</td>  */}
+                <input
+                  className="fw-bolder"
+                  type="datetime-local"
+                  value={convertUTCToIST(item.jsonData)}
+                  disabled
+                />
+                {/* <td>{item.user}</td> */}
                 {/* <td>
-                  {/ <details className="m-0 p-0">
-                    <summary id="mainLog">JSON Data</summary> */}
-                    {/* <ul>{createNestedTable(JSON.parse(item.jsonData), item.eventType)}</ul> */}
-                  {/* </details> /}
-                </td> */}
-
-                <td>
-                  {
-                    createNestedTable(item.jsonData)
-                  }
-                </td>
-
-                {/* <td>{createNestedTable(JSON.parse(item.jsonData))}</td> */}
+                <details className="m-0 p-0">
+                  <summary id="mainLog">JSON Data</summary>
+                  <ul>{createCollapsibleList(JSON.parse(item.jsonData), item.eventType)}</ul>
+                </details>
+              </td> */}
+                {item.eventType !== "EmployeeApi/Update" ? <tr><td></td>{createNestedTable(JSON.parse(item.jsonData).Action.ActionParameters.employee)}</tr>:
+                  <>{createNestedTable(JSON.parse(item.jsonData).Action.ActionParameters.employee)}</>
+                }
               </tr>
             ))}
         </tbody>
       </table>
+    </div>
   );
 };
 
