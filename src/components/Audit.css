@@ -7,70 +7,127 @@ dt#Country+#EmployeeId,
     display: none;
 }
 
-#audit>table {
+table.inAudit {
     display: flex;
 }
 
-tr {
+tr.inAudit {
     width: 100%;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
 }
 
-tr:has(tr)>tr {
+tr.inAudit:has(tr)>tr.inAudit {
     padding: 0 !important;
     margin: 0 !important;
 }
 
-tr>tr>* {
-    flex: 1;
-    width: 100%;
-    height: 100%;
-}
-
-tr>*:not(tr) {
+tr.inAudit>tr>* {
     flex: 1;
 }
 
-td,
-tbody {
-    height: 100% !important;
+tr.inAudit>*:not(tr) {
+    flex: 1;
 }
 
-tr {
-    border-block: solid !important;
-    border-color: gray !important;
-}
+td.inAudit,
+tbody.inAudit {}
 
-tr>*:not(tr),
-tr>tr>*,
-th {
+tr.inAudit>*:not(tr),
+tr.inAudit>tr>*,
+th.inAudit {
     padding: 1dvmin !important;
 }
 
-tr>tr {
-    border: 0 !important;
-}
-
-input {
+input.inAudit {
     position: absolute;
-    left: 2%;
-    background: transparent !important;
-    border: none !important;
+    z-index: 99;
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    color: currentColor;
+    scale: .8;
 }
 
-tr.update>tr+tr {
+th.inAudit>input {
+    background: none !important;
+}
+
+input[type="button"].inAudit:hover+input {
+    display: flex;
+    inset-block: 5%;
+    inset-inline: 10%;
+}
+
+tr:has(input[type="button"].inAudit:hover) {
     position: relative;
 }
 
-tr.update>tr+tr::before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 0;
-    width: 100%;
-    height: 1px;
-    background-color: red;
-    transform: translateY(-50%);
+input.inAudit:not([type="button"]) {
+    display: none;
+    left: 50%;
+    transition: all 2s ease;
+}
+
+tr.inAudit.update>tr+tr {
+    position: relative;
+}
+
+/* 
+tr.inAudit.update > tr + tr::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background-color: red;
+  transform: translateY(-50%);
+}
+
+*/
+/* tr.inAudit, td, th.inAudit{
+    border: solid !important;
+} */
+
+tr.inAudit>* {
+    border-bottom: .5dvmin solid gray;
+    border-right: .5dvmin solid gray;
+}
+
+th.inAudit {
+    border-block: .5dvmin solid black;
+    border-right: .5dvmin solid black;
+}
+
+th.inAudit>input {
+    left: 3%;
+    scale: .9;
+}
+
+
+th.inAudit,
+tr.inAudit>td:empty {
+    border-left: .5dvmin solid gray;
+}
+
+tr:has(s)>td:empty {
+    border-left-color: transparent !important;
+    border-bottom: .5dvmin solid gray;
+}
+
+tr.inAudit {
+    border: none !important;
+}
+
+#headMt {
+    position: relative;
+}
+
+#headMt>input {
+    inset: 2%;
+}
+
+tr:has(:last-child>td:last-child) {
+    background-color: red !important;
+    display: none;
 }
