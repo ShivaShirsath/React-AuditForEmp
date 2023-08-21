@@ -145,3 +145,8 @@ dialog {
   aspect-ratio: 1;
   overflow: hidden;
 }
+
+svg#load{
+  position: fixed;
+  inset: 0;
+}

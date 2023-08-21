@@ -11,7 +11,10 @@ function EmployeeList() {
       setIsLoading(true);
       const response = await api.get("/emp");
       setEmployees(response.data);
-      setIsLoading(false);
+      setTimeout(() => {
+        document.querySelector("dialog").close();
+        setIsLoading(false);
+      }, 2000);
     }
     fetchEmployees();
   }, []);
@@ -28,15 +31,13 @@ function EmployeeList() {
       setIsLoading(false);
     }
   };
-  useEffect(() => {
-    if (isLoading) document.querySelector("dialog").showModal();
-    else document.querySelector("dialog").close();
-  }, [isLoading]);
-  return (
+
+  return isLoading ? (
+    <dialog open>
+      <Loader />
+    </dialog>
+  ) : (
     <>
-      <dialog>
-        <Loader />
-      </dialog>
       <h2>
         Employees{" "}
         <Link to={"add"} className="text-success">
