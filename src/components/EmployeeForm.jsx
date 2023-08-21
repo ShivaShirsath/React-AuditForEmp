@@ -15,7 +15,6 @@ const EmployeeForm = () => {
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
   const [isFormValid, setIsFormValid] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const [isDeleted, setIsDeleted] = useState(false);
   const [employee, setEmployee] = useState({
     name: "",
@@ -39,8 +38,6 @@ const EmployeeForm = () => {
   });
 
   useEffect(() => {
-    setIsLoading(true);
-    if (isEdit) {
       async function fetchEmployee() {
         try {
           const response = await api.get(`/emp/${id}`);
@@ -51,9 +48,9 @@ const EmployeeForm = () => {
           setIsDone(true);
         }
       }
+    if (isEdit) {
       fetchEmployee();
     }
-    setIsLoading(false);
   }, [id, isEdit]);
 
   useEffect(() => {
@@ -128,7 +125,6 @@ const EmployeeForm = () => {
     e.preventDefault();
     setIsFormValid($("#employeeForm").valid());
     if (isFormValid) {
-      setIsLoading(true);
       try {
         if (isEdit) {
           await api.put(`/emp/${id}`, [employee, Xemployee]);
@@ -176,20 +172,17 @@ const EmployeeForm = () => {
         console.error("Error submitting employee:", error);
         toast.error(error);
       }
-      setIsLoading(false);
     }
   };
 
   const handleDelete = async () => {
     if (confirm("Do you want to Delete this Employee")) {
-      setIsLoading(true);
       try {
         await api.delete(`/emp/${id}`, { data: employee });
         setIsDeleted(true);
       } catch (error) {
         console.error("Error deleting employee:", error);
       }
-      setIsLoading(false);
     }
   };
 

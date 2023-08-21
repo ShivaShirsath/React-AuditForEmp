@@ -27,7 +27,9 @@ function App() {
       <header>
         <nav className="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark border-bottom box-shadow mb-3 text-white">
           <div className="container">
-            <a className="navbar-brand border-end" href='/'>Employee Audit &nbsp;</a>
+            <a className="navbar-brand border-end fw-bolder" style={{
+              color: 'orange'
+            }} href='/'>Employee Audit &nbsp;</a>
             <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
               aria-expanded="false" aria-label="Toggle navigation">
               <span className="navbar-toggler-icon"></span>
@@ -35,10 +37,10 @@ function App() {
             <div className="navbar-collapse collapse d-sm-inline-flex justify-content-between">
               <ul className="navbar-nav flex-grow-1 fw-bolder">
                 <li className="nav-item">
-                  <Link className="nav-link text-success" to={'/'}>Employee</Link>
+                  <Link className="nav-link text-light" to={'/'}>Employees</Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link text-warning " to={'/audit'}>Audit Log</Link>
+                  <Link className="nav-link text-success " to={'/audit'}>Audit Log</Link>
                 </li>
               </ul>
             </div>
@@ -75,7 +77,7 @@ function App() {
       </div>
       <footer className="border-top footer text-muted">
         <div className="container">
-          &copy; 2023 - EmpAddrAudit - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+          &copy; 2023 - EmpAddrAudit - Privacy
         </div>
       </footer>
     </>

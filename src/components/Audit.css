@@ -31,38 +31,34 @@ tr.inAudit>*:not(tr) {
     flex: 1;
 }
 
-td.inAudit,
-tbody.inAudit {}
-
 tr.inAudit>*:not(tr),
 tr.inAudit>tr>*,
 th.inAudit {
     padding: 1dvmin !important;
 }
 
-input.inAudit {
+input:not(#modifiedTime).inAudit {
     position: absolute;
     z-index: 99;
     background-color: rgba(255, 255, 255, 0.95) !important;
     color: currentColor;
-    scale: .8;
+    scale: .9 .75;
 }
 
 th.inAudit>input {
     background: none !important;
 }
 
-input[type="button"].inAudit:hover+input {
+tr:has(input[type="time"]:not(#modifiedTime).inAudit:hover) {
+    position: relative;
+}
+
+input[type="time"].inAudit:hover+input:not(#modifiedTime) {
     display: flex;
     inset-block: 5%;
     inset-inline: 10%;
 }
-
-tr:has(input[type="button"].inAudit:hover) {
-    position: relative;
-}
-
-input.inAudit:not([type="button"]) {
+input.inAudit:not([type="time"], [type="button"]){
     display: none;
     left: 50%;
     transition: all 2s ease;
@@ -72,34 +68,17 @@ tr.inAudit.update>tr+tr {
     position: relative;
 }
 
-/* 
-tr.inAudit.update > tr + tr::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 0;
-  width: 100%;
-  height: 1px;
-  background-color: red;
-  transform: translateY(-50%);
-}
-
-*/
-/* tr.inAudit, td, th.inAudit{
-    border: solid !important;
-} */
-
 tr.inAudit>* {
-    border-bottom: .5dvmin solid gray;
-    border-right: .5dvmin solid gray;
+    border-bottom: .25dvmin solid gray;
+    border-right: .25dvmin solid gray;
 }
 
 th.inAudit {
-    border-block: .5dvmin solid black;
-    border-right: .5dvmin solid black;
+    border-block: .25dvmin solid black;
+    border-right: .25dvmin solid black;
 }
 
-th.inAudit>input {
+th.inAudit>input:not(#modifiedTime){
     left: 3%;
     scale: .9;
 }
@@ -107,12 +86,15 @@ th.inAudit>input {
 
 th.inAudit,
 tr.inAudit>td:empty {
-    border-left: .5dvmin solid gray;
+    border-left: .25dvmin solid gray;
 }
 
 tr:has(s)>td:empty {
-    border-left-color: transparent !important;
-    border-bottom: .5dvmin solid gray;
+    border-bottom: .25dvmin solid gray;
+}
+
+tr.inAudit.update>tr:not(:has(s))>td:empty {
+    border-bottom-color: transparent !important;
 }
 
 tr.inAudit {
@@ -123,11 +105,36 @@ tr.inAudit {
     position: relative;
 }
 
-#headMt>input {
+#headMt>input :not(#modifiedTime){
     inset: 2%;
 }
 
 tr:has(:last-child>td:last-child) {
     background-color: red !important;
     display: none;
+}
+
+#modifiedTime {
+    border: none;
+}
+
+th.inAudit:first-child {
+    border-top-left-radius: 1.5dvmin;
+}
+th.inAudit:last-child {
+    border-top-right-radius: 1.5dvmin;
+}
+
+input[type="time"].inAudit{
+    border-radius: 1dvmin;
+}
+
+@keyframes shake {
+    0%{
+        transform: translateX(0)
+    }
+    100% {
+        transform: translateX(1dvmin)
+    }
+
 }
