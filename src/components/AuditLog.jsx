@@ -10,7 +10,10 @@ const AuditLog = () => {
       setIsLoading(true);
       const response = await api.get("/audit");
       setAuditLog(response.data);
-      setIsLoading(false);
+      setTimeout(() => {
+        document.querySelector("dialog").close();
+        setIsLoading(false);
+      }, 1500);
     }
     fetchAuditLog();
   }, []);
@@ -28,181 +31,154 @@ const AuditLog = () => {
       istDateTime.getUTCMinutes()
     ).padStart(2, "0")}`;
   };
-  const createNestedTable = (jsonData, data, pre) => {
-    console.log(data); console.log(pre);
+  const createNestedTable = (eventType, jsonData, data, pre) => {
+    if (typeof data !== "undefined" && typeof pre !== "undefined") {
+      return (
+        <>
+          <tr key={`${eventType}1`} className="border-warning border-bottom-0" style={{
+            borderTopWidth: '.35dvmin'
+          }}>
+            <th>New Values</th>
+            <td className={pre.Name !== data.Name ? "table-light" : "notModified"}>{data.Name}</td>
+            <td className={pre.Phone !== data.Phone ? "table-light" : "notModified"}>{data.Phone}</td>
+            <td className={pre.Address?.City !== data.Address?.City ? "table-light" : "notModified"}>{data.Address?.City}</td>
+            <td className={pre.Address?.State !== data.Address?.State ? "table-light" : "notModified"}>{data.Address?.State}</td>
+            <td className={pre.Address?.Country !== data.Address?.Country ? "table-light" : "notModified"}>{data.Address?.Country}</td>
+            <td className={pre.Address?.ZipCode !== data.Address?.ZipCode ? "table-light" : "notModified"}>{data.Address?.ZipCode}</td>
+            <td key={`${eventType}1-md`}>
+              {
+                <input
+                  className="inAudit fw-bolder"
+                  type="datetime-local"
+                  value={convertUTCToIST(jsonData)}
+                  disabled
+                />
+              }
+            </td>
+          </tr>
+          <tr key={`${eventType}2`} className="border-warning mod" style={{
+            borderBottomWidth: '.35dvmin'
+          }}>
+            <th key={`${eventType}2n`} className="notModified">Old Values</th>
+            <td className={pre.Name !== data.Name ? "table-warning" : "notModified"} key={`${eventType}2-${pre.Name}`}>{pre.Name}</td>
+            <td className={pre.Phone !== data.Phone ? "table-warning" : "notModified"} key={`${eventType}2-${pre.Phone}`}>{pre.Phone}</td>
+            <td className={pre.Address?.City !== data.Address?.City ? "table-warning" : "notModified"} key={`${eventType}2-${pre.Address?.City}`}>{pre.Address?.City}</td>
+            <td className={pre.Address?.State !== data.Address?.State ? "table-warning" : "notModified"} key={`${eventType}2-${pre.Address?.State}`}>{pre.Address?.State}</td>
+            <td className={pre.Address?.Country !== data.Address?.Country ? "table-warning" : "notModified"} key={`${eventType}2-${pre.Address?.Country}`}>{pre.Address?.Country}</td>
+            <td className={pre.Address?.ZipCode !== data.Address?.ZipCode ? "table-warning" : "notModified"} key={`${eventType}2-${pre.Address?.ZipCode}`}>{pre.Address?.ZipCode}</td>
+            <td key={`${eventType}2-md`}></td>
+          </tr>
+        </>
+      );
+    }
     if (typeof data !== "undefined" && typeof pre === "undefined") {
-      return <tr>
-        <tr>
-        <td>{data.Name}</td>
-        <td>{data.Phone}</td>
-        <td>{data.Address?.City}</td>
-        <td>{data.Address?.State}</td>
-        <td>{data.Address?.ZipCode}</td>
-        <td>{data.Address?.Country}</td>
-        <td>{
-          <input
-            className="inAudit fw-bolder"
-            type="datetime-local"
-            value={convertUTCToIST(jsonData)}
-            disabled
-          />
-        }</td>
-      </tr>
-      <tr></tr>
-      </tr >
+      return (
+        <>
+          <tr className={`border-${eventType === "POST Employees/Create" || eventType === "EmployeeApi/Create"
+            ? "success"
+            : eventType === "POST Employees/Delete" || eventType === "EmployeeApi/Delete"
+              ? "danger"
+              : eventType === "POST Employees/Edit" || eventType === "EmployeeApi/Update"
+                ? "warning"
+                : eventType === "GET Employees/Details" || eventType === "EmployeeApi/Details"
+                  ? "primary"
+                  : "dark"
+            }`} style={{
+              borderBottomWidth: '.35dvmin'
+            }}>
+            <th className={`text-${eventType === "POST Employees/Create" || eventType === "EmployeeApi/Create"
+              ? "success"
+              : eventType === "POST Employees/Delete" || eventType === "EmployeeApi/Delete"
+                ? "danger"
+                : eventType === "POST Employees/Edit" || eventType === "EmployeeApi/Update"
+                  ? "warning"
+                  : eventType === "GET Employees/Details" || eventType === "EmployeeApi/Details"
+                    ? "primary"
+                    : "dark"
+              }`} key={`${eventType}n`}>{`${eventType === "POST Employees/Create" || eventType === "EmployeeApi/Create"
+                ? "Added"
+                : eventType === "POST Employees/Delete" || eventType === "EmployeeApi/Delete"
+                  ? "Deleted"
+                  : eventType === "POST Employees/Edit" || eventType === "EmployeeApi/Update"
+                    ? "Updated"
+                    : eventType === "GET Employees/Details" || eventType === "EmployeeApi/Details"
+                      ? "*"
+                      : "-"
+                } Values`}</th>
+            <td key={`${eventType}-${data.Name}`}>{data.Name}</td>
+            <td key={`${eventType}-${data.Phone}`}>{data.Phone}</td>
+            <td key={`${eventType}-${data.Address?.City}`}>{data.Address?.City}</td>
+            <td key={`${eventType}-${data.Address?.State}`}>{data.Address?.State}</td>
+            <td key={`${eventType}-${data.Address?.Country}`}>{data.Address?.Country}</td>
+            <td key={`${eventType}-${data.Address?.ZipCode}`}>{data.Address?.ZipCode}</td>
+            <td key={`${eventType}-md`}>
+              {
+                <input
+                  className="inAudit fw-bolder"
+                  type="datetime-local"
+                  value={convertUTCToIST(jsonData)}
+                  disabled
+                />
+              }
+            </td>
+          </tr>
+          <tr key={`${eventType}mt`}></tr>
+        </>
+      );
     }
-    if (typeof data !== "undefined" && typeof pre !== "undefined"){
-      return <tr>
-        <tr>
-        <td>{data.Name}</td>
-        <td>{data.Phone}</td>
-        <td>{data.Address?.City}</td>
-        <td>{data.Address?.State}</td>
-        <td>{data.Address?.ZipCode}</td>
-        <td>{data.Address?.Country}</td>
-        <td>{
-          <input
-            className="inAudit fw-bolder"
-            type="datetime-local"
-            value={convertUTCToIST(jsonData)}
-            disabled
-          />
-        }</td>
-      </tr>
-      <tr>
-        <td>{pre.Name}</td>
-        <td>{pre.Phone}</td>
-        <td>{pre.Address?.City}</td>
-        <td>{pre.Address?.State}</td>
-        <td>{pre.Address?.ZipCode}</td>
-        <td>{pre.Address?.Country}</td>
-        <td></td>
-      </tr>
-      </tr>
-    }
-    // if (typeof data !== "undefined") {
-    //   return Object.keys(data).map((key) => {
-    //     if (key === "0" || key === "1")
-    //       return (
-    //         <tr key={`${key}`} className="inAudit">
-    //           <td>{key === "1"?"Old Values":"New Values"}</td>
-    //           {createNestedTable(data[key], key === "1", data["0"])}
-    //           <td></td>
-    //         </tr>
-    //       );
-    //     if (typeof data[key] === "object")
-    //       return createNestedTable(
-    //         data[key],
-    //         modified,
-    //         pre[key] !== "undefined" ? pre[key] : pre
-    //       );
-    //     else
-    //       return modified ? (
-    //         <dt className="inAudit" id={key}>
-    //           {pre[key] === data[key] ? (
-    //             data[key]
-    //           ) : (
-    //             <s style={{ textDecorationColor: "red" }}>{data[key]}</s>
-    //           )}
-    //         </dt>
-    //       ) : (
-    //         <dt id={key}>{data[key]}</dt>
-    //       );
-    //   });
-    // }
   };
   return isLoading ? (
     <dialog open>
       <Loader />
     </dialog>
   ) : (
-      <div>
-        <h1
-          style={{
-            textAlign: "center",
-          }}
+    <div>
+      <h1
+        style={{
+          textAlign: "center",
+        }}
+      >
+        Audit Log
+      </h1>
+      <table className="table table-bordered inAudit" >
+        <tbody
+          className="w-100 inAudit"
         >
-          Audit Log
-        </h1>
-      <table className="inAudit">
           <tr
-            className="inAudit"
+            key={"tr1"}
+            className="table-light border-dark"
             style={{
               borderBottom: "solid",
             }}
           >
-
-            <th className="inAudit">ID</th>
-            <th className="inAudit">Name</th>
-            <th className="inAudit">Phone</th>
-            <th className="inAudit">City</th>
-            <th className="inAudit">State</th>
-            <th className="inAudit">PIN Code</th>
-            <th className="inAudit">Country</th>
-            <th className="inAudit">
-              <input
-                id="modifiedTime"
-                className="fw-bolder text-dark inAudit"
-                type="button"
-                value={"Data"}
-                disabled
-              />
-            </th>
+            <th key={"th1"} className="inAudit"></th>
+            <th key={"th2"} className="inAudit">Name</th>
+            <th key={"th3"} className="inAudit">Phone</th>
+            <th key={"th4"} className="inAudit">City</th>
+            <th key={"th5"} className="inAudit">State</th>
+            <th key={"th6"} className="inAudit">PIN Code</th>
+            <th key={"th7"} className="inAudit">Country</th>
+            <th key={"th8"} className="inAudit">Modified Date</th>
           </tr>
-      </table>
-        <table className="table w-100 inAudit">
-          <tbody className="w-100 inAudit"
-            style={{
-              marginBottom: "7dvmin"
-            }}
-        >
           {auditLog
             .slice()
             .reverse()
             .map((item) => (
-              <tr
-                className={
-                  item.eventType === "EmployeeApi/Update"
-                    ? "update inAudit"
-                    : "inAudit"
-                }
-                key={item.eventId}
-                style={{
-                  "--bs-table-color": `var(--bs-${item.eventType === "POST Employees/Create" ||
-                    item.eventType === "EmployeeApi/Create"
-                    ? "success"
-                    : item.eventType === "POST Employees/Delete" ||
-                      item.eventType === "EmployeeApi/Delete"
-                      ? "danger"
-                      : item.eventType === "POST Employees/Edit" ||
-                        item.eventType === "EmployeeApi/Update"
-                        ? "warning"
-                        : item.eventType === "GET Employees/Details" ||
-                          item.eventType === "EmployeeApi/Details"
-                          ? "primary"
-                          : "dark"
-                    })`,
-                }}
-              >
-                {
-                  item.eventType !== "EmployeeApi/Update" ? (
-                  <tr className="inAudit">
-                      {createNestedTable(item.jsonData,
-                      JSON.parse(item.jsonData).Action.ActionParameters.employee
-                    )}
-                      <td></td>
-                  </tr>
-                  ) : (item.eventType !== "EmployeeApi/Update"?
-                <tr>
-                        {createNestedTable(item.jsonData,
-                          JSON.parse(item.jsonData).Action.ActionParameters.employee[0],
-                          JSON.parse(item.jsonData).Action.ActionParameters.employee[1]
-                        )}
-                        <td></td>
-                  </tr>
-                      : <></>)}
-                <td></td>
-              </tr>
+              item.eventType !== "EmployeeApi/Update" ? (
+                createNestedTable(
+                  item.eventType,
+                  item.jsonData,
+                  JSON.parse(item.jsonData).Action.ActionParameters.employee
+                )
+              )
+                : createNestedTable(
+                  item.eventType,
+                  item.jsonData,
+                  JSON.parse(item.jsonData).Action.ActionParameters
+                    .employee[0],
+                  JSON.parse(item.jsonData).Action.ActionParameters
+                    .employee[1]
+                )
             ))}
         </tbody>
       </table>

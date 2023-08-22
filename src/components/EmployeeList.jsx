@@ -14,7 +14,7 @@ function EmployeeList() {
       setTimeout(() => {
         document.querySelector("dialog").close();
         setIsLoading(false);
-      }, 2000);
+      }, 1500);
     }
     fetchEmployees();
   }, []);

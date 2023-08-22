@@ -38,16 +38,16 @@ const EmployeeForm = () => {
   });
 
   useEffect(() => {
-      async function fetchEmployee() {
-        try {
-          const response = await api.get(`/emp/${id}`);
-          setXEmployee(response.data);
-          setEmployee(response.data);
-        } catch (error) {
-          toast.error(`Employee not Found !`);
-          setIsDone(true);
-        }
+    async function fetchEmployee() {
+      try {
+        const response = await api.get(`/emp/${id}`);
+        setXEmployee(response.data);
+        setEmployee(response.data);
+      } catch (error) {
+        toast.error(`Employee not Found !`);
+        setIsDone(true);
       }
+    }
     if (isEdit) {
       fetchEmployee();
     }
@@ -74,8 +74,7 @@ const EmployeeForm = () => {
   async function fetchStates(countryName) {
     try {
       const response = await api.get(
-        `/emp/states${
-          countryName === "India" ? "?country_name=" + countryName : ""
+        `/emp/states${countryName === "India" ? "?country_name=" + countryName : ""
         }`
       );
       setStates(response.data);
@@ -88,10 +87,9 @@ const EmployeeForm = () => {
   async function fetchCities(stateName) {
     try {
       const response = await api.get(
-        `/emp/cities${
-          stateName === "Maharashtra" || stateName === "Telangana"
-            ? "?state_name=" + stateName
-            : ""
+        `/emp/cities${stateName === "Maharashtra" || stateName === "Telangana"
+          ? "?state_name=" + stateName
+          : ""
         }`
       );
       setCities(response.data);
@@ -167,7 +165,7 @@ const EmployeeForm = () => {
         setTimeout(() => {
           document.querySelector("dialog").close();
           setIsDone(true);
-        }, 2000);
+        }, 1500);
       } catch (error) {
         console.error("Error submitting employee:", error);
         toast.error(error);

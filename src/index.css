@@ -38,10 +38,6 @@ footer {
   padding: 2.5dvmin;
 }
 
-th+td:not(:has(input, select, svg))::before {
-  content: " : ";
-}
-
 details,
 input {
   border-radius: 2.5dvmin;
@@ -70,8 +66,10 @@ li.nav-item {
 
 input[type="datetime-local"] {
   color: currentColor;
-  border: 0.005dvmin solid currentColor;
-  text-align: center;
+  background: none;
+  border: none !important;
+  padding: 0;
+  margin: 0;
 }
 
 code {
@@ -119,11 +117,12 @@ td:has(input, select) {
 td:has(input, select)>label {
   position: absolute;
   inset-block: 10%;
-  inset-inline-end: -25%;
+  inset-inline-end: -2%;
   background-color: gainsboro;
   opacity: 0.75;
   border-radius: 1.125dvmin;
   padding: 0.5dvmin;
+  transform: translateX(100%);
 }
 
 #loading {

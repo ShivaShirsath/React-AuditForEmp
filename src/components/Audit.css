@@ -1,137 +1,16 @@
-* {
-    box-sizing: border-box !important;
+
+.inAudit>tr>th:first-child{
+    border-right: .35dvmin solid black !important;
 }
 
-dt#Country+#EmployeeId,
-#AddressId {
-    display: none;
+.inAudit>tr>td,.inAudit>tr>th {
+    border-width: .15dvmin;
 }
 
-table.inAudit {
-    display: flex;
+.inAudit>tr>th:first-child, .inAudit>tr>th{
+    background-color: rgba(0, 0, 0, 0.123);
 }
 
-tr.inAudit {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-}
-
-
-
-tr.inAudit:has(tr)>tr.inAudit {
-    padding: 0 !important;
-    margin: 0 !important;
-}
-
-tr.inAudit>tr>* {
-    flex: 1;
-}
-
-tr.inAudit>*:not(tr) {
-    flex: 1;
-}
-
-tr.inAudit>*:not(tr),
-tr.inAudit>tr>*,
-th.inAudit {
-    padding: 1dvmin !important;
-}
-
-/* input:not(#modifiedTime).inAudit {
-    position: absolute;
-    right: 0;
-    z-index: 99;
-    background-color: rgba(255, 255, 255, 0.95) !important;
-    color: currentColor;
-    scale: .9 .75;
-} */
-
-/* th.inAudit>input {
-    background: none !important;
-} */
-
-/* tr:has(input[type="time"]:not(#modifiedTime).inAudit:hover) {
-    position: relative;
-} */
-
-/* input[type="time"].inAudit:hover+input:not(#modifiedTime) {
-    display: flex;
-    inset-block: 5%;
-    inset-inline: 10%;
-} */
-/* input.inAudit:not([type="time"], [type="button"]){
-    display: none;
-    left: 50%;
-    transition: all 2s ease;
-} */
-
-tr.inAudit.update>tr+tr {
-    position: relative;
-}
-
-tr.inAudit>* {
-    border-bottom: .25dvmin solid gray;
-    border-right: .25dvmin solid gray;
-}
-
-th.inAudit {
-    border-block: .25dvmin solid black;
-    border-right: .25dvmin solid black;
-}
-
-/* th.inAudit>input:not(#modifiedTime){
-    left: 3%;
-    scale: .9;
-} */
-
-
-th.inAudit,
-tr.inAudit>td:empty {
-    border-left: .25dvmin solid gray;
-}
-
-tr:has(s)>td:empty {
-    border-bottom: .25dvmin solid gray;
-}
-
-tr.inAudit.update>tr:not(:has(s))>td:empty {
-    border-bottom-color: transparent !important;
-}
-
-tr.inAudit {
-    border: none !important;
-}
-
-#headMt {
-    position: relative;
-}
-
-/* #headMt>input :not(#modifiedTime){
-    inset: 2%;
-} */
-
-tr:has(:last-child>td:last-child) {
-    background-color: red !important;
-    display: none;
-}
-
-#modifiedTime {
-    border: none;
-}
-
-th.inAudit:first-child {
-    border-top-left-radius: 1.5dvmin;
-}
-th.inAudit:last-child {
-    border-top-right-radius: 1.5dvmin;
-}
-
-td:has(orange) {
-    border: .25dvmin solid red !important;
-}
-
-tr.inAudit+td:empty{
-    display: none;
+tbody.inAudit>tr:last-child{
+    height: 10dvmin !important;
 }
