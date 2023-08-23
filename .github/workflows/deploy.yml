@@ -19,15 +19,11 @@ jobs:
           node-version: 14
 
       - name: Install Dependencies
-        run: |
-          npm install -g pnpm
-          pnpm install --global pnpm@latest  # Install the latest version of pnpm
-          pnpm setup
-          pnpm install  # Using pnpm to install project dependencies
+        run: npm install
 
       - name: Build Project
-        run: pnpm run build
-
+        run: vite build
+        
       - name: Deploy to GitHub Pages
         run: npx gh-pages -d dist
         env:
