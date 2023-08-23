@@ -25,6 +25,14 @@ jobs:
         run: npx vite build
 
       - name: Deploy to GitHub Pages
-        run: npm run deploy
+        run: npx vite build
         env:
           REACT_APP_BASE_URL: "/React-AuditForEmp"
+      
+      - name: push dist to gh-pages
+        uses: crazy-max/ghaction-github-pages@v3.1.0
+        with:
+          target_branch: gh-pages
+          build_dir: dist
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
