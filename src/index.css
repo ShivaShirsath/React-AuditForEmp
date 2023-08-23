@@ -47,7 +47,7 @@ details {
   padding: 0.5dvmin;
 }
 
-details>summary {
+details > summary {
   cursor: pointer;
 }
 
@@ -85,16 +85,16 @@ details:has(#mainLog) {
   border: 0.005dvmin solid tomato;
 }
 
-details:has(#mainLog)>* {
+details:has(#mainLog) > * {
   margin: 0.5dvmin;
 }
 
-details>summary::before {
+details > summary::before {
   content: "▷";
   margin-right: 0.5dvmin;
 }
 
-details[open]>summary::before {
+details[open] > summary::before {
   content: "▽";
 }
 
@@ -102,7 +102,7 @@ summary {
   list-style: none;
 }
 
-thead>tr {
+thead > tr {
   border-bottom: solid;
 }
 
@@ -114,7 +114,7 @@ td:has(input, select) {
   position: relative;
 }
 
-td:has(input, select)>label {
+td:has(input, select) > label {
   position: absolute;
   inset-block: 10%;
   inset-inline-end: -2%;
@@ -145,7 +145,7 @@ dialog {
   overflow: hidden;
 }
 
-svg#load{
+svg#load {
   position: fixed;
   inset: 0;
 }
