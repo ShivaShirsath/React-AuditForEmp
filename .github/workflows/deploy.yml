@@ -25,6 +25,6 @@ jobs:
         run: npx vite build
 
       - name: Deploy to GitHub Pages
-        run: npx gh-pages -d dist
+        run: npm run deploy
         env:
           REACT_APP_BASE_URL: "/React-AuditForEmp"
