@@ -21,18 +21,34 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Build Project
-        run: npx vite build
-
       - name: Deploy to GitHub Pages
         run: npx vite build
         env:
           REACT_APP_BASE_URL: "/React-AuditForEmp"
       
-      - name: Push dist to output branch
-        uses: crazy-max/ghaction-github-pages@v3.1.0
+      - name: Setup Pages
+        uses: actions/configure-pages@v2
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
         with:
-          target_branch: output  # Change to your desired output branch
-          build_dir: dist
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          path: "dist"
+
+  deploy:
+    needs: build-and-deploy
+
+    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
+    permissions:
+      pages: write # to deploy to Pages
+      id-token: write # to verify the deployment originates from an appropriate source
+
+    # Deploy to the github-pages environment
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    # Specify runner + deployment step
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
