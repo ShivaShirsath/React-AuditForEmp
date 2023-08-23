@@ -21,8 +21,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: lts/*
-
-      - run: npm ci
       
       - name: Deploy to GitHub Pages
         run: npx vite build
