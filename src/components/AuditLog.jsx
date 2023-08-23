@@ -43,8 +43,8 @@ const AuditLog = () => {
             <td className={pre.Phone !== data.Phone ? "table-light" : "notModified"}>{data.Phone}</td>
             <td className={pre.Address?.City !== data.Address?.City ? "table-light" : "notModified"}>{data.Address?.City}</td>
             <td className={pre.Address?.State !== data.Address?.State ? "table-light" : "notModified"}>{data.Address?.State}</td>
-            <td className={pre.Address?.Country !== data.Address?.Country ? "table-light" : "notModified"}>{data.Address?.Country}</td>
             <td className={pre.Address?.ZipCode !== data.Address?.ZipCode ? "table-light" : "notModified"}>{data.Address?.ZipCode}</td>
+            <td className={pre.Address?.Country !== data.Address?.Country ? "table-light" : "notModified"}>{data.Address?.Country}</td>
             <td key={`${eventType}1-md`}>
               {
                 <input
@@ -64,8 +64,8 @@ const AuditLog = () => {
             <td className={pre.Phone !== data.Phone ? "table-warning" : "notModified"} key={`${eventType}2-${pre.Phone}`}>{pre.Phone}</td>
             <td className={pre.Address?.City !== data.Address?.City ? "table-warning" : "notModified"} key={`${eventType}2-${pre.Address?.City}`}>{pre.Address?.City}</td>
             <td className={pre.Address?.State !== data.Address?.State ? "table-warning" : "notModified"} key={`${eventType}2-${pre.Address?.State}`}>{pre.Address?.State}</td>
-            <td className={pre.Address?.Country !== data.Address?.Country ? "table-warning" : "notModified"} key={`${eventType}2-${pre.Address?.Country}`}>{pre.Address?.Country}</td>
             <td className={pre.Address?.ZipCode !== data.Address?.ZipCode ? "table-warning" : "notModified"} key={`${eventType}2-${pre.Address?.ZipCode}`}>{pre.Address?.ZipCode}</td>
+            <td className={pre.Address?.Country !== data.Address?.Country ? "table-warning" : "notModified"} key={`${eventType}2-${pre.Address?.Country}`}>{pre.Address?.Country}</td>
             <td key={`${eventType}2-md`}></td>
           </tr>
         </>
@@ -104,13 +104,14 @@ const AuditLog = () => {
                     : eventType === "GET Employees/Details" || eventType === "EmployeeApi/Details"
                       ? "*"
                       : "-"
-                } Values`}</th>
+                } Values`}
+            </th>
             <td key={`${eventType}-${data.Name}`}>{data.Name}</td>
             <td key={`${eventType}-${data.Phone}`}>{data.Phone}</td>
             <td key={`${eventType}-${data.Address?.City}`}>{data.Address?.City}</td>
             <td key={`${eventType}-${data.Address?.State}`}>{data.Address?.State}</td>
-            <td key={`${eventType}-${data.Address?.Country}`}>{data.Address?.Country}</td>
             <td key={`${eventType}-${data.Address?.ZipCode}`}>{data.Address?.ZipCode}</td>
+            <td key={`${eventType}-${data.Address?.Country}`}>{data.Address?.Country}</td>
             <td key={`${eventType}-md`}>
               {
                 <input

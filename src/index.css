@@ -149,3 +149,24 @@ svg#load {
   position: fixed;
   inset: 0;
 }
+
+.grid {
+  display: grid;
+  grid-gap: 5dvmin;
+  grid-template-columns: repeat(auto-fit, minmax(30dvw, .5fr));
+}
+
+.grid>div {
+  display: flex;
+  gap: 1dvmin;
+  align-items: center;
+  justify-items: center;
+  width: 100%;
+}
+.grid>div>*:first-child {
+  flex: .125;
+}
+.grid>div>*:last-child {
+  flex: .6;
+}
+
