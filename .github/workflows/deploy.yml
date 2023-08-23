@@ -3,7 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - master
+      - master  # Adjust to your main branch name
 
 jobs:
   build-and-deploy:
@@ -29,10 +29,10 @@ jobs:
         env:
           REACT_APP_BASE_URL: "/React-AuditForEmp"
       
-      - name: push dist to gh-pages
+      - name: Push dist to output branch
         uses: crazy-max/ghaction-github-pages@v3.1.0
         with:
-          target_branch: gh-pages
+          target_branch: output  # Change to your desired output branch
           build_dir: dist
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
