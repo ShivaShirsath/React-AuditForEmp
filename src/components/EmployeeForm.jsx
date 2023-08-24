@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { useParams, Navigate, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useParams, Navigate } from "react-router-dom";
 import api from "../utils/api";
 import $ from "jquery";
 import "jquery-validation";
 import "jquery-validation-unobtrusive";
 import { toast } from "react-hot-toast";
 import { Loader } from "../assets/Loader";
-
+/**
+ * Component for adding or editing employee details.
+ * Fetches data, handles form submissions, and validation.
+ */
 const EmployeeForm = () => {
   const { id } = useParams();
   const isEdit = id !== undefined;
@@ -37,6 +40,7 @@ const EmployeeForm = () => {
     },
   });
 
+  // Fetch existing employee data on edit
   useEffect(() => {
     async function fetchEmployee() {
       try {
@@ -53,6 +57,7 @@ const EmployeeForm = () => {
     }
   }, [id, isEdit]);
 
+  // Fetch countries and initial states
   useEffect(() => {
     async function fetchCountries() {
       try {
@@ -71,6 +76,7 @@ const EmployeeForm = () => {
     $("#employeeForm").validate();
   }, []);
 
+  // Fetch states based on selected country
   async function fetchStates(countryName) {
     try {
       const response = await api.get(
@@ -84,6 +90,7 @@ const EmployeeForm = () => {
     }
   }
 
+  // Fetch cities based on selected state
   async function fetchCities(stateName) {
     try {
       const response = await api.get(
@@ -99,6 +106,7 @@ const EmployeeForm = () => {
     }
   }
 
+  // for Input change and Validations
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setIsFormValid($("#employeeForm").valid());
@@ -119,6 +127,7 @@ const EmployeeForm = () => {
     }
   };
 
+  // Submit Update if isEdit else Submint Create
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsFormValid($("#employeeForm").valid());
@@ -173,6 +182,7 @@ const EmployeeForm = () => {
     }
   };
 
+  // for Deleting data
   const handleDelete = async () => {
     if (confirm("Do you want to Delete this Employee")) {
       try {
@@ -184,6 +194,7 @@ const EmployeeForm = () => {
     }
   };
 
+  // Redirect after successful submission or deletion
   if (isDone || isDeleted) {
     return <Navigate to="/" />;
   }

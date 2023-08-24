@@ -2,9 +2,15 @@ import { useState, useEffect } from "react";
 import api from "../utils/api";
 import { Loader } from "../assets/Loader";
 import "./Audit.css";
+/**
+ * Component to display audit logs.
+ * Fetches audit data and renders in a table format.
+ */
 const AuditLog = () => {
   const [auditLog, setAuditLog] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch audit log data on component mount
   useEffect(() => {
     async function fetchAuditLog() {
       setIsLoading(true);
@@ -17,6 +23,8 @@ const AuditLog = () => {
     }
     fetchAuditLog();
   }, []);
+
+  // Convert UTC to IST date format
   const convertUTCToIST = (data) => {
     const istDateTime = new Date(
       new Date(new Date(JSON.parse(data).StartDate).toISOString()).getTime() +
@@ -31,7 +39,24 @@ const AuditLog = () => {
       istDateTime.getUTCMinutes()
     ).padStart(2, "0")}`;
   };
-  const createNestedTable = (eventType, jsonData, data, pre) => {
+
+  // for returning according to Type
+  const returnType = (type, text=false) => {
+    return type === "POST Employees/Create" || type === "EmployeeApi/Create"
+      ? (text ? "Added" : "success")
+      : type === "POST Employees/Delete" || type === "EmployeeApi/Delete"
+        ? (text ? "Deleted" : "danger")
+        : type === "POST Employees/Edit" || type === "EmployeeApi/Update"
+          ? (text ? "" : "warning")
+          : type === "GET Employees/Details" || type === "EmployeeApi/Details"
+            ? (text ? "" : "primary")
+            : (text ? "" : "dark")
+      ;
+  }
+
+  // Create table rows for different event types
+  const createTable = (eventType, jsonData, data, pre) => {
+    // for the Updated data
     if (typeof data !== "undefined" && typeof pre !== "undefined") {
       return (
         <>
@@ -71,40 +96,15 @@ const AuditLog = () => {
         </>
       );
     }
+
+    // for the Create and Delete data 
     if (typeof data !== "undefined" && typeof pre === "undefined") {
       return (
         <>
-          <tr className={`border-${eventType === "POST Employees/Create" || eventType === "EmployeeApi/Create"
-            ? "success"
-            : eventType === "POST Employees/Delete" || eventType === "EmployeeApi/Delete"
-              ? "danger"
-              : eventType === "POST Employees/Edit" || eventType === "EmployeeApi/Update"
-                ? "warning"
-                : eventType === "GET Employees/Details" || eventType === "EmployeeApi/Details"
-                  ? "primary"
-                  : "dark"
-            }`} style={{
+          <tr className={`border-${returnType(eventType)}`} style={{
               borderBottomWidth: '.35dvmin'
             }}>
-            <th className={`text-${eventType === "POST Employees/Create" || eventType === "EmployeeApi/Create"
-              ? "success"
-              : eventType === "POST Employees/Delete" || eventType === "EmployeeApi/Delete"
-                ? "danger"
-                : eventType === "POST Employees/Edit" || eventType === "EmployeeApi/Update"
-                  ? "warning"
-                  : eventType === "GET Employees/Details" || eventType === "EmployeeApi/Details"
-                    ? "primary"
-                    : "dark"
-              }`} key={`${eventType}n`}>{`${eventType === "POST Employees/Create" || eventType === "EmployeeApi/Create"
-                ? "Added"
-                : eventType === "POST Employees/Delete" || eventType === "EmployeeApi/Delete"
-                  ? "Deleted"
-                  : eventType === "POST Employees/Edit" || eventType === "EmployeeApi/Update"
-                    ? "Updated"
-                    : eventType === "GET Employees/Details" || eventType === "EmployeeApi/Details"
-                      ? "*"
-                      : "-"
-                } Values`}
+            <th className={`text-${returnType(eventType)}`} key={`${eventType}n`}>{`${returnType(eventType, true)} Values`}
             </th>
             <td key={`${eventType}-${data.Name}`}>{data.Name}</td>
             <td key={`${eventType}-${data.Phone}`}>{data.Phone}</td>
@@ -166,13 +166,13 @@ const AuditLog = () => {
             .reverse()
             .map((item) => (
               item.eventType !== "EmployeeApi/Update" ? (
-                createNestedTable(
+                createTable(
                   item.eventType,
                   item.jsonData,
                   JSON.parse(item.jsonData).Action.ActionParameters.employee
                 )
               )
-                : createNestedTable(
+                : createTable(
                   item.eventType,
                   item.jsonData,
                   JSON.parse(item.jsonData).Action.ActionParameters

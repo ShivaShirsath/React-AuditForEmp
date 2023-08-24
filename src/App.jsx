@@ -4,10 +4,14 @@ import EmployeeForm from './components/EmployeeForm';
 import AuditLog from './components/AuditLog';
 import { Link } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-
+/**
+ * Main application component.
+ * Handles routing and navigation.
+ */
 function App() {
   return (
     <>
+      {/* Global toast notifications */}
       <Toaster
         position="top-center"
         reverseOrder={false}
@@ -23,6 +27,7 @@ function App() {
           },
         }}
       />
+      {/* Header */}
       <header>
         <nav className="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark border-bottom box-shadow mb-3 text-white">
           <div className="container">
@@ -46,7 +51,9 @@ function App() {
           </div>
         </nav>
       </header>
+      {/* Main content */}
       <div className="container">
+        {/* Route to EmployeeList component */}
         <Routes>
           <Route
             path="/"
@@ -54,29 +61,35 @@ function App() {
               <EmployeeList />
             }
           />
+          {/* Route to EmployeeForm component for editing */}
           <Route
             path="/edit/:id"
             element={
               <EmployeeForm />
             }
           />
+          {/* Route to EmployeeForm component for adding */}
           <Route
             path="/add"
             element={
               <EmployeeForm />
             }
-          /><Route
+          />
+          {/* Route to AuditLog component */}
+          <Route
             path="/audit"
             element={
               <AuditLog />
             }
           />
+          {/* Default route */}
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </div>
+      {/* Footer */}
       <footer className="border-top footer text-muted">
         <div className="container">
-          &copy; 2023 - EmpAddrAudit - Privacy
+          &copy; 2023 - P99soft
         </div>
       </footer>
     </>

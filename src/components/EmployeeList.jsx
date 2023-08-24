@@ -2,10 +2,15 @@ import { useEffect, useState } from "react";
 import api from "../utils/api";
 import { Link } from "react-router-dom";
 import { Loader } from "../assets/Loader";
-
+/**
+ * Component displaying a list of employees.
+ * Fetches employee data from the API and provides actions like editing and deleting.
+ */
 function EmployeeList() {
   const [employees, setEmployees] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch employees on component mount
   useEffect(() => {
     async function fetchEmployees() {
       setIsLoading(true);
@@ -18,6 +23,8 @@ function EmployeeList() {
     }
     fetchEmployees();
   }, []);
+
+  // Delete employee by ID
   const handleDelete = async (id) => {
     if (confirm("Do you want to delete this Employee")) {
       setIsLoading(true);
