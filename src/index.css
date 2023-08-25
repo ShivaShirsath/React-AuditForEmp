@@ -152,8 +152,9 @@ svg#load {
 
 .grid {
   display: grid;
-  grid-gap: 5dvmin;
-  grid-template-columns: repeat(auto-fit, minmax(30dvw, .5fr));
+  grid-row-gap: 1dvmin;
+  grid-column-gap: .25dvmin;
+  grid-template-columns: repeat(auto-fit, minmax(50vh, 1fr));
 }
 
 .grid>div {
@@ -164,9 +165,13 @@ svg#load {
   width: 100%;
 }
 .grid>div>*:first-child {
-  flex: .125;
+  flex: .25;
 }
+
 .grid>div>*:last-child {
   flex: .6;
+}
+.grid>div:last-child{
+  margin-top: 3dvmin;
 }
 

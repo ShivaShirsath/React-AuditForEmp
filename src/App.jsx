@@ -34,7 +34,7 @@ function App() {
             <a className="navbar-brand border-end fw-bolder" style={{
               color: 'orange'
             }} href='/'>Employee Audit &nbsp;</a>
-            <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+            <button className="navbar-toggler bg-success" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
               aria-expanded="false" aria-label="Toggle navigation">
               <span className="navbar-toggler-icon"></span>
             </button>

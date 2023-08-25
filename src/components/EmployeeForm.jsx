@@ -204,7 +204,7 @@ const EmployeeForm = () => {
       <dialog>
         <Loader />
       </dialog>
-      <h2 className="mb-4">{isEdit ? "Edit" : "Add"} Employee</h2>
+      <h2 className="mb-4">{isEdit ? "Edit" : "Create"} Employee</h2>
       <form id="employeeForm" onSubmit={handleSubmit} className="p-3">
         <input type="hidden" name="EmployeeID" />
         <div className="grid">
@@ -345,7 +345,8 @@ const EmployeeForm = () => {
               style={{
                 display: "flex",
                 alignItems: "start",
-                justifyContent: "space-around",
+                justifyContent: "start",
+                gap: '1dvmin'
               }}
             >
               <button
@@ -356,7 +357,7 @@ const EmployeeForm = () => {
                 }}
                 disabled={!isFormValid}
               >
-                <i className="bi bi-file-earmark-check"></i> {isEdit ? "Edit" : "Add"}
+                <i className="bi bi-file-earmark-check"></i> {isEdit ? "Save" : "Create"}
               </button>
               {isEdit && (
                 <button

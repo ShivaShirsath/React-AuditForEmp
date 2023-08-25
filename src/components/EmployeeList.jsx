@@ -69,7 +69,8 @@ function EmployeeList() {
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    justifyContent: "space-around",
+                    justifyContent: "center",
+                    gap: "1dvmin"
                   }}
                 >
                   <Link
