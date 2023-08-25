@@ -134,11 +134,7 @@ const AuditLog = () => {
     </dialog>
   ) : (
     <div>
-      <h1
-        style={{
-          textAlign: "center",
-        }}
-      >
+      <h1 className="text-center mb-4">
         Audit Log
       </h1>
       <table className="table table-bordered inAudit" >

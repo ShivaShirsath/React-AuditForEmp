@@ -15,6 +15,7 @@
   "dependencies": {
     "axios": "^1.4.0",
     "bootstrap": "^5.3.1",
+    "bootstrap-icons": "^1.10.5",
     "jquery": "^3.7.0",
     "jquery-validation": "^1.19.5",
     "jquery-validation-unobtrusive": "^4.0.0",
