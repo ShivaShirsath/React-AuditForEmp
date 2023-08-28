@@ -6,7 +6,7 @@ import "jquery-validation";
 import "jquery-validation-unobtrusive";
 import { toast } from "react-hot-toast";
 import { Loader } from "../assets/Loader";
-/**
+/*
  * Component for adding or editing employee details.
  * Fetches data, handles form submissions, and validation.
  */
@@ -43,6 +43,7 @@ const EmployeeForm = () => {
   // Fetch existing employee data on edit
   useEffect(() => {
     async function fetchEmployee() {
+      document.querySelector("dialog").showModal();
       try {
         const response = await api.get(`/emp/${id}`);
         setXEmployee(response.data);
@@ -51,6 +52,7 @@ const EmployeeForm = () => {
         toast.error(`Employee not Found !`);
         setIsDone(true);
       }
+      document.querySelector("dialog").close();
     }
     if (isEdit) {
       fetchEmployee();
@@ -84,6 +86,16 @@ const EmployeeForm = () => {
         }`
       );
       setStates(response.data);
+      if (employee.address.state) {
+        setEmployee((prevEmployee) => ({
+          ...prevEmployee,
+          address: {
+            ...prevEmployee.address,
+            ['state']: '',
+          },
+        }));
+        setIsFormValid(false);
+      }
     } catch (error) {
       console.error("Error fetching states:", error);
       toast.error("Error fetching states");
@@ -100,6 +112,16 @@ const EmployeeForm = () => {
         }`
       );
       setCities(response.data);
+      if (employee.address.city) {
+        setEmployee((prevEmployee) => ({
+          ...prevEmployee,
+          address: {
+            ...prevEmployee.address,
+            ['city']: '',
+          },
+        }));
+        setIsFormValid(false);
+      }
     } catch (error) {
       console.error("Error fetching cities:", error);
       toast.error("Error fetching cities");
@@ -109,7 +131,6 @@ const EmployeeForm = () => {
   // for Input change and Validations
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setIsFormValid($("#employeeForm").valid());
     if (name.startsWith("address.")) {
       const addressField = name.split(".")[1];
       setEmployee((prevEmployee) => ({
@@ -125,6 +146,7 @@ const EmployeeForm = () => {
         [name]: value,
       }));
     }
+    setIsFormValid($("#employeeForm").valid());
   };
 
   // Submit Update if isEdit else Submint Create
@@ -179,6 +201,8 @@ const EmployeeForm = () => {
         console.error("Error submitting employee:", error);
         toast.error(error);
       }
+    } else {
+      setIsFormValid(false);
     }
   };
 
@@ -282,6 +306,7 @@ const EmployeeForm = () => {
                   handleInputChange(e);
                   fetchCities(e.target.value);
                 }}
+                id="stateDropdown"
                 className="form-control"
                 required
               >
@@ -304,6 +329,7 @@ const EmployeeForm = () => {
                 value={employee.address.city}
                 onChange={handleInputChange}
                 className="form-control"
+                id="citiDropdown"
                 required
               >
                 <option value="" disabled>

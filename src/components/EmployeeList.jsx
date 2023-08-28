@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import api from "../utils/api";
 import { Link } from "react-router-dom";
 import { Loader } from "../assets/Loader";
-/**
+/*
  * Component displaying a list of employees.
- * Fetches employee data from the API and provides actions like editing and deleting.
+ * Fetches employee data from the API and provides actions like creating, editing and deleting.
  */
 function EmployeeList() {
   const [employees, setEmployees] = useState([]);

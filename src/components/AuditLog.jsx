@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../utils/api";
 import { Loader } from "../assets/Loader";
-import "./Audit.css";
 /**
  * Component to display audit logs.
  * Fetches audit data and renders in a table format.
@@ -10,19 +9,31 @@ const AuditLog = () => {
   const [auditLog, setAuditLog] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [perPage] = useState(10); // Number of items per page
+  const [totalPages, setTotalPages] = useState(0);
+
   // Fetch audit log data on component mount
   useEffect(() => {
+    fetchAuditLog();
+  }, []);
+
     async function fetchAuditLog() {
       setIsLoading(true);
-      const response = await api.get("/audit");
-      setAuditLog(response.data);
+      const response = await api.get(`/audit?page=${currentPage}`);
+      console.log(response);
+      setAuditLog(response.data); // Assuming API returns data in a "data" property
+      setTotalPages(response.data.totalPages); // Assuming API returns total number of pages
       setTimeout(() => {
         document.querySelector("dialog").close();
         setIsLoading(false);
       }, 1500);
     }
+  // Fetch audit log data on component mount
+  useEffect(() => {
     fetchAuditLog();
-  }, []);
+  }, [currentPage]);
+
 
   // Convert UTC to IST date format
   const convertUTCToIST = (data) => {
@@ -178,8 +189,29 @@ const AuditLog = () => {
                 )
             ))}
         </tbody>
-      </table>
-    </div>
+        </table>
+        <div>
+        
+          <div className="pagination">
+            <div className="page-info">
+          Displaying items {(currentPage - 1) * perPage + 1} to {Math.min(currentPage * perPage, auditLog.length)} out of {auditLog.length}
+            </div>
+            <button
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(currentPage - 1)}
+            >
+              Previous
+            </button>
+            <span>Page {currentPage} of {totalPages}</span>
+            <button
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(currentPage + 1)}
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      </div>
   );
 };
 export default AuditLog;

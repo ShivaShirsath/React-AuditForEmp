@@ -4,7 +4,7 @@ import EmployeeForm from './components/EmployeeForm';
 import AuditLog from './components/AuditLog';
 import { Link } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-/**
+/*
  * Main application component.
  * Handles routing and navigation.
  */

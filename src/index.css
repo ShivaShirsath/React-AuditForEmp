@@ -175,3 +175,26 @@ svg#load {
   margin-top: 3dvmin;
 }
 
+.inAudit>tr>th:first-child {
+  border-right: 0.35dvmin solid black !important;
+}
+
+.inAudit>tr>td,
+.inAudit>tr>th {
+  border-width: 0.15dvmin;
+}
+
+.inAudit>tr>th:first-child,
+.inAudit>tr>th {
+  background-color: rgba(0, 0, 0, 0.123);
+}
+
+tbody.inAudit>tr:last-child {
+  height: 10dvmin !important;
+}
+.pagination{
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  z-index: 1000;
+}
