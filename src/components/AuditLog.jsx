@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "../utils/api";
 import { Loader } from "../assets/Loader";
+import { toast } from "react-hot-toast";
 /**
  * Component to display audit logs.
  * Fetches audit data and renders in a table format.
@@ -9,30 +10,59 @@ const AuditLog = () => {
   const [auditLog, setAuditLog] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0);
   // const [perPage] = useState(10); // Number of items per page
   const [totalPages, setTotalPages] = useState(0);
+  const [eventType, setEventType] = useState("all");
+  const [eventTypeList, setEventTypeList] = useState([]);
 
   // Fetch audit log data on component mount
-  useEffect(() => {
-    fetchAuditLog();
-  }, []);
-
   async function fetchAuditLog() {
     setIsLoading(true);
-    const response = await api.get(`/audit?page=${currentPage}`);
-    setAuditLog(response.data); // Assuming API returns data in a "data" property
-    setTotalPages(response.data.totalPages); // Assuming API returns total number of pages
-    setTimeout(() => {
-      document.querySelector("dialog").close();
-      setIsLoading(false);
-    }, 1500);
+    const response = await api.get(`/audit?eventType=${eventType}&page=${currentPage}`);
+    setAuditLog(response.data.events);
+    setTotalPages(response.data.totalPages);
+    setIsLoading(false);
   }
+  async function fetchAuditTables() {
+    setIsLoading(true);
+    const response = await api.get(`/audit/Tables`);
+    setEventTypeList(response.data);
+    setIsLoading(false);
+  }
+
   // Fetch audit log data on component mount
   useEffect(() => {
-    fetchAuditLog();
-  }, [currentPage]);
+    if (eventType === "all" || (Array.isArray(eventTypeList) && eventTypeList.length)) {
+      fetchAuditTables();
+    }
+  }, []);
 
+  useEffect(() => {
+    if (currentPage === 0) {
+    console.log("MT");
+    } else {
+    fetchAuditLog();
+  }
+}, [currentPage]);
+  
+  useEffect(() => {
+    console.log(eventTypeList);
+    setCurrentPage(1);
+    
+    if(Array.isArray(eventTypeList) && eventTypeList.length) toast((t) => (
+      <span>
+        {eventTypeList.map((item) => <>{item}</>)}
+        <button onClick={() => {
+          toast.dismiss(t.id)
+        }
+        }>
+          Dismiss
+        </button>
+      </span>
+    ));
+  }, [eventTypeList]);
+  
   // Convert UTC to IST date format
   const convertUTCToIST = (data) => {
     const istDateTime = new Date(
@@ -250,74 +280,82 @@ const AuditLog = () => {
     </dialog>
   ) : (
     <div>
-      <h1 className="text-center mb-4">Audit Log</h1>
-      <table className="table table-bordered inAudit">
-        <tbody className="w-100 inAudit">
-          {createTable(
-            "Head",
-            auditLog[0]["jsonData"],
-            JSON.parse(auditLog[0]["jsonData"])["Action"]["ActionParameters"][
-              Object.keys(
+      <h1 className="text-center mb-4">
+        Audit Logs {auditLog.length === 0 && "not found !"}
+      </h1>
+      {auditLog.length !== 0 && (
+        <>
+          <table className="table table-bordered inAudit">
+            <tbody className="w-100 inAudit">
+              {createTable(
+                "Head",
+                auditLog[0]["jsonData"],
                 JSON.parse(auditLog[0]["jsonData"])["Action"][
                   "ActionParameters"
+                ][
+                  Object.keys(
+                    JSON.parse(auditLog[0]["jsonData"])["Action"][
+                      "ActionParameters"
+                    ]
+                  ).length === 1
+                    ? Object.keys(
+                        JSON.parse(auditLog[0]["jsonData"])["Action"][
+                          "ActionParameters"
+                        ]
+                      )[0]
+                    : Object.keys(
+                        JSON.parse(auditLog[0]["jsonData"])["Action"][
+                          "ActionParameters"
+                        ]
+                      )[1]
                 ]
-              ).length === 1
-                ? Object.keys(
-                    JSON.parse(auditLog[0]["jsonData"])["Action"][
-                      "ActionParameters"
-                    ]
-                  )[0]
-                : Object.keys(
-                    JSON.parse(auditLog[0]["jsonData"])["Action"][
-                      "ActionParameters"
-                    ]
-                  )[1]
-            ]
-          )}
-          {auditLog
-            .slice()
-            .reverse()
-            .map((item) =>
-              item.eventType !== "EmployeeApi/Update"
-                ? createTable(
-                    item.eventType,
-                    item.jsonData,
-                    JSON.parse(item.jsonData).Action.ActionParameters.employee
-                  )
-                : createTable(
-                    item.eventType,
-                    item.jsonData,
-                    JSON.parse(item.jsonData).Action.ActionParameters
-                      .employee[0],
-                    JSON.parse(item.jsonData).Action.ActionParameters
-                      .employee[1]
-                  )
-            )}
-        </tbody>
-      </table>
-      <div>
-        <div className="pagination">
-          <div className="page-info"></div>
-          <button
-            className="btn btn-primary btn-sm"
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage(currentPage - 1)}
-          >
-            Previous
-          </button>
-          <span>
-            Page {currentPage} of {totalPages}
-            {auditLog.length}
-          </span>
-          <button
-            className="btn btn-primary btn-sm"
-            disabled={currentPage === totalPages}
-            onClick={() => setCurrentPage(currentPage + 1)}
-          >
-            Next
-          </button>
-        </div>
-      </div>
+              )}
+              {auditLog
+                .slice()
+                .reverse()
+                .map((item) =>
+                  item.eventType !== "EmployeeApi/Update"
+                    ? createTable(
+                        item.eventType,
+                        item.jsonData,
+                        JSON.parse(item.jsonData).Action.ActionParameters
+                          .employee
+                      )
+                    : createTable(
+                        item.eventType,
+                        item.jsonData,
+                        JSON.parse(item.jsonData).Action.ActionParameters
+                          .employee[0],
+                        JSON.parse(item.jsonData).Action.ActionParameters
+                          .employee[1]
+                      )
+                )}
+            </tbody>
+          </table>
+          <div>
+            <div className="pagination">
+              <div className="page-info"></div>
+              <button
+                className="btn btn-primary btn-sm"
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage(currentPage - 1)}
+              >
+                Previous
+              </button>
+              <span>
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                className="btn btn-primary btn-sm"
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage(currentPage + 1)}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };
