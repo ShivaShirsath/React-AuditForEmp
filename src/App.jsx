@@ -1,9 +1,14 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-import EmployeeList from './components/EmployeeList';
-import EmployeeForm from './components/EmployeeForm';
+import EmployeeList from './components/Employees/EmployeeList';
+import EmployeeForm from './components/Employees/EmployeeForm';
 import AuditLog from './components/AuditLog';
 import { Link } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+import ServicesList from './components/Services/ServicesList';
+import ServiceForm from './components/Products/ProductForm';
+import ServicesForm from './components/Services/ServicesForm';
+import ProductList from './components/Products/ProductList';
+import ProductForm from './components/Products/ProductForm';
 /*
  * Main application component.
  * Handles routing and navigation.
@@ -16,8 +21,7 @@ function App() {
         position="top-center"
         reverseOrder={false}
         gutter={2}
-        toastOp
-        tions={{
+        toastOptions={{
           icon: "✅",
           style: {
             borderRadius: "1.5dvmin",
@@ -42,6 +46,12 @@ function App() {
               <ul className="navbar-nav flex-grow-1 fw-bolder">
                 <li className="nav-item">
                   <Link className="nav-link text-light" to={'/'}>Employees</Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link text-light" to={'/services'}>Services</Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link text-light" to={'/products'}>Products</Link>
                 </li>
                 <li className="nav-item">
                   <Link className="nav-link text-success " to={'/audit'}>Audit Log</Link>
@@ -75,6 +85,48 @@ function App() {
               <EmployeeForm />
             }
           />
+
+            <Route
+              path="/services"
+              element={
+                <ServicesList />
+              }
+            />
+            {/* Route to EmployeeForm component for editing */}
+            <Route
+              path="/service/edit/:id"
+              element={
+                <ServicesForm />
+              }
+            />
+            {/* Route to EmployeeForm component for adding */}
+            <Route
+              path="/service/add"
+              element={
+                <ServicesForm />
+              }
+            />
+
+              <Route
+                path="/products"
+                element={
+                  <ProductList />
+                }
+              />
+              {/* Route to EmployeeForm component for editing */}
+              <Route
+                path="/product/edit/:id"
+                element={
+                  <ProductForm />
+                }
+              />
+              {/* Route to EmployeeForm component for adding */}
+              <Route
+                path="/product/add"
+                element={
+                  <ProductForm />
+                }
+              />
           {/* Route to AuditLog component */}
           <Route
             path="/audit"

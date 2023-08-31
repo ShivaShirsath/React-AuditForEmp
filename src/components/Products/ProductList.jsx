@@ -1,39 +1,36 @@
 import { useEffect, useState } from "react";
-import api from "../utils/api";
+import api from "../../utils/api";
 import { Link } from "react-router-dom";
-import { Loader } from "../assets/Loader";
-/*
- * Component displaying a list of employees.
- * Fetches employee data from the API and provides actions like creating, editing and deleting.
- */
-function EmployeeList() {
-  const [employees, setEmployees] = useState([]);
+import { Loader } from "../../assets/Loader";
+
+function ProductList() {
+  const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch employees on component mount
+  // Fetch products on component mount
   useEffect(() => {
-    async function fetchEmployees() {
+    async function fetchProducts() {
       setIsLoading(true);
       const response = await api.get("/emp");
-      setEmployees(response.data);
+      setProducts(response.data);
       setTimeout(() => {
         document.querySelector("dialog").close();
         setIsLoading(false);
       }, 1500);
     }
-    fetchEmployees();
+    fetchProducts();
   }, []);
 
-  // Delete employee by ID
+  // Delete product by ID
   const handleDelete = async (id) => {
-    if (confirm("Do you want to delete this Employee")) {
+    if (confirm("Do you want to delete this Product")) {
       setIsLoading(true);
       try {
-        const response = await api.get(`/emp/${id}`);
-        await api.delete(`/emp/${id}`, { data: response.data });
+        const response = await api.get(`/prod/${id}`);
+        await api.delete(`/prod/${id}`, { data: response.data });
         window.location.reload();
       } catch (error) {
-        console.error("Error deleting employee:", error);
+        console.error("Error deleting product:", error);
       }
       setIsLoading(false);
     }
@@ -46,12 +43,12 @@ function EmployeeList() {
   ) : (
     <>
       <h2>
-        Employees{" "}
+        Products{" "}
           <Link to={"add"} className="btn btn-success btn-sm text-white ms-3">
             <i className="bi bi-person-plus"></i> Create
         </Link>
       </h2>
-      {!(employees.length === 0) ? (
+      {!(products.length === 0) ? (
         <table className="table">
           <thead>
             <tr>
@@ -61,10 +58,10 @@ function EmployeeList() {
             </tr>
           </thead>
           <tbody>
-            {employees.map((employee) => (
-              <tr key={employee.employeeId}>
-                <td>{employee.employeeId}</td>
-                <td>{employee.name}</td>
+            {products.map((product) => (
+              <tr key={product.productId}>
+                <td>{product.productId}</td>
+                <td>{product.name}</td>
                 <td
                   style={{
                     display: "flex",
@@ -74,13 +71,13 @@ function EmployeeList() {
                   }}
                 >
                   <Link
-                    to={"edit/" + employee.employeeId}
+                    to={"product/edit/" + product.productId}
                     className="btn btn-sm btn-primary text-white"
                   >
                     <i className="bi bi-pencil-square"></i> Edit
                   </Link>
                   <button
-                    onClick={() => handleDelete(employee.employeeId)}
+                    onClick={() => handleDelete(product.productId)}
                     className="btn btn-sm btn-danger text-white"
                   >
                     <i className="bi bi-person-x"></i> Delete
@@ -97,4 +94,4 @@ function EmployeeList() {
   );
 }
 
-export default EmployeeList;
+export default ProductList;

@@ -14,16 +14,25 @@ const AuditLog = () => {
   // const [perPage] = useState(10); // Number of items per page
   const [totalPages, setTotalPages] = useState(0);
   const [eventType, setEventType] = useState("all");
+  const [action, setAction] = useState("all");
   const [eventTypeList, setEventTypeList] = useState([]);
+  const [actionList, setActionList] = useState([]);
 
   // Fetch audit log data on component mount
   async function fetchAuditLog() {
     setIsLoading(true);
-    const response = await api.get(`/audit?eventType=${eventType}&page=${currentPage}`);
+    const response = await api.get(
+      `/audit?eventType=${
+        eventType === "all"
+          ? "all"
+          : eventType + (action === "all" ? "" : "Api/" + action)
+      }&page=${currentPage}`
+    );
     setAuditLog(response.data.events);
     setTotalPages(response.data.totalPages);
     setIsLoading(false);
   }
+
   async function fetchAuditTables() {
     setIsLoading(true);
     const response = await api.get(`/audit/Tables`);
@@ -33,36 +42,48 @@ const AuditLog = () => {
 
   // Fetch audit log data on component mount
   useEffect(() => {
-    if (eventType === "all" || (Array.isArray(eventTypeList) && eventTypeList.length)) {
+    if (
+      eventType === "all" ||
+      (Array.isArray(eventTypeList) && eventTypeList.length)
+    ) {
       fetchAuditTables();
     }
   }, []);
 
   useEffect(() => {
+    if (eventType === "all") {
+      setActionList([]);
+    }
     if (currentPage === 0) {
-    console.log("MT");
+      console.log("MT");
     } else {
-    fetchAuditLog();
-  }
-}, [currentPage]);
-  
+      fetchAuditLog();
+    }
+  }, [currentPage, eventType, action]);
+
   useEffect(() => {
-    console.log(eventTypeList);
+    if (eventType === "all") {
+      setActionList([]);
+    } else if (Array.isArray(eventTypeList) && eventTypeList.length) {
+      setActionList(
+        eventTypeList.map((event) =>
+          event.substring(event.indexOf("Api/") + 4, event.length)
+        )
+      );
+    }
+  },[eventType])
+
+  useEffect(() => {
     setCurrentPage(1);
-    
-    if(Array.isArray(eventTypeList) && eventTypeList.length) toast((t) => (
-      <span>
-        {eventTypeList.map((item) => <>{item}</>)}
-        <button onClick={() => {
-          toast.dismiss(t.id)
-        }
-        }>
-          Dismiss
-        </button>
-      </span>
-    ));
+    if (Array.isArray(eventTypeList) && eventTypeList.length) {
+      setActionList(
+        eventTypeList.map((event) =>
+          event.substring(event.indexOf("Api/") + 4, event.length)
+        )
+      );
+    }
   }, [eventTypeList]);
-  
+
   // Convert UTC to IST date format
   const convertUTCToIST = (data) => {
     const istDateTime = new Date(
@@ -110,7 +131,7 @@ const AuditLog = () => {
             borderBottom: "solid",
           }}
         >
-          <th>Table Name</th>
+          {/* <th>Table Name</th> */}
           <th></th>
           {Object.entries(data).map(([key, value]) => {
             if (!key.includes("Id"))
@@ -129,7 +150,7 @@ const AuditLog = () => {
               borderTopWidth: ".35dvmin",
             }}
           >
-            <td>{type.substring(0, type.indexOf("Api/"))}</td>
+            {/* <td>{type.substring(0, type.indexOf("Api/"))}</td> */}
             <th key={`td-nv-${data[Object.keys(data)[0]]}`}>New Values</th>
             {Object.entries(data).map(([key, value]) => {
               if (!key.includes("Id"))
@@ -160,9 +181,8 @@ const AuditLog = () => {
               borderBottomWidth: ".35dvmin",
             }}
           >
-            <td></td>
+            {/* <td></td> */}
             <th key={`td-ov-${data[Object.keys(data)[0]]}`}>Old Values</th>
-
             {Object.entries(pre).map(([key, value]) => {
               if (!key.includes("Id"))
                 return (
@@ -193,7 +213,7 @@ const AuditLog = () => {
             borderBottomWidth: ".35dvmin",
           }}
         >
-          <td>{type.substring(0, type.indexOf("Api/"))}</td>
+          {/* <td>{type.substring(0, type.indexOf("Api/"))}</td> */}
           <th className={`text-${returnType(type, false)}`}>
             {returnType(type, true)} Values
           </th>
@@ -283,10 +303,71 @@ const AuditLog = () => {
       <h1 className="text-center mb-4">
         Audit Logs {auditLog.length === 0 && "not found !"}
       </h1>
+
       {auditLog.length !== 0 && (
         <>
           <table className="table table-bordered inAudit">
             <tbody className="w-100 inAudit">
+              <tr>
+                <th>Table Name</th>
+                <td>
+                  <select
+                    name="eventType"
+                    value={eventType}
+                    className="form-select"
+                    onChange={(e) => {
+                      const { name, value } = e.target;
+                      setEventType(value);
+                    }}
+                    id="eventDropdown"
+                    required
+                  >
+                    <option value={"all"}>all</option>
+                      {
+                        Array.from(new Set(eventTypeList.map((ev) => 
+                          ev.substring(
+                            0,
+                            ev.indexOf("Api/")
+                          )
+                        ))).map((event) => (
+                      <option
+                        key={event}
+                        value=/*{event}*/ {event}
+                      >
+                        {/* {event} */}
+                        {event}
+                      </option>
+                    ))}
+                  </select>
+                </td>
+                <th>Action</th>
+                <td>
+                  <select
+                    name="action"
+                    value={action}
+                    className="form-select"
+                    onChange={(e) => {
+                      const { name, value } = e.target;
+                      setAction(value);
+                    }}
+                    id="actionDropdown"
+                    required
+                  >
+                    <option value={"all"}>all</option>
+                    {actionList.map((event) => (
+                      <option
+                        key={event.substring(0, event.indexOf("Api/"))}
+                        value={
+                          event
+                        } /*{event.substring(0, event.indexOf("Api/"))}*/
+                      >
+                        {event}
+                        {/* {event.substring(0, event.indexOf("Api/"))} */}
+                      </option>
+                    ))}
+                  </select>
+                </td>
+              </tr>
               {createTable(
                 "Head",
                 auditLog[0]["jsonData"],
@@ -314,7 +395,7 @@ const AuditLog = () => {
                 .slice()
                 .reverse()
                 .map((item) =>
-                  item.eventType !== "EmployeeApi/Update"
+                  !item.eventType.includes("Update")
                     ? createTable(
                         item.eventType,
                         item.jsonData,

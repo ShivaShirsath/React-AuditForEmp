@@ -1,165 +1,79 @@
 import { useState, useEffect } from "react";
 import { useParams, Navigate } from "react-router-dom";
-import api from "../utils/api";
+import api from "../../utils/api";
 import $ from "jquery";
 import "jquery-validation";
 import "jquery-validation-unobtrusive";
 import { toast } from "react-hot-toast";
-import { Loader } from "../assets/Loader";
-/*
- * Component for adding or editing employee details.
- * Fetches data, handles form submissions, and validation.
- */
-const EmployeeForm = () => {
+import { Loader } from "../../assets/Loader";
+
+const ProductForm = () => {
   const { id } = useParams();
   const isEdit = id !== undefined;
   const [isDone, setIsDone] = useState(null);
-  const [countries, setCountries] = useState([]);
-  const [states, setStates] = useState([]);
-  const [cities, setCities] = useState([]);
+  
   const [isFormValid, setIsFormValid] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
-  const [employee, setEmployee] = useState({
-    name: "",
-    phone: "",
-    address: {
-      city: "",
-      state: "",
-      zipCode: "",
-      country: "",
-    },
+  const [product, setProduct] = useState({
+    name: '',
+    category: '', //(Hardware, Software, Networking, Security, etc.)
+    description: '',
+    price: '',
+    compatibility:'', //(Operating systems, software versions, etc.)
   });
-  const [Xemployee, setXEmployee] = useState({
-    name: "",
-    phone: "",
-    address: {
-      city: "",
-      state: "",
-      zipCode: "",
-      country: "",
-    },
+  const [Xproduct, setXProduct] = useState({
+    name: '',
+    category: '', //(Hardware, Software, Networking, Security, etc.)
+    description: '',
+    price: '',
+    compatibility: '', //(Operating systems, software versions, etc.)
   });
 
-  // Fetch existing employee data on edit
+  // Fetch existing Product data on edit
   useEffect(() => {
-    async function fetchEmployee() {
+    async function fetchProduct() {
       document.querySelector("dialog").showModal();
       try {
         const response = await api.get(`/emp/${id}`);
-        setXEmployee(response.data);
-        setEmployee(response.data);
+        setXProduct(response.data);
+        setProduct(response.data);
       } catch (error) {
-        toast.error(`Employee not Found !`);
+        toast.error(`Product not Found !`);
         setIsDone(true);
       }
       document.querySelector("dialog").close();
     }
     if (isEdit) {
-      fetchEmployee();
+      fetchProduct();
     }
   }, [id, isEdit]);
 
   // Fetch countries and initial states
   useEffect(() => {
-    async function fetchCountries() {
-      try {
-        const response = await api.get("/emp/contries");
-        setCountries(response.data);
-      } catch (error) {
-        console.error("Error fetching countries:", error);
-        toast.error("Error fetching countries");
-      }
-    }
-    fetchCountries();
-    if (isEdit) {
-      fetchStates(Xemployee.address.country);
-      fetchCities(Xemployee.address.state);
-    }
-    $("#employeeForm").validate();
+    $("#productForm").validate();
   }, []);
-
-  // Fetch states based on selected country
-  async function fetchStates(countryName) {
-    try {
-      const response = await api.get(
-        `/emp/states${countryName === "India" ? "?country_name=" + countryName : ""
-        }`
-      );
-      setStates(response.data);
-      if (employee.address.state) {
-        setEmployee((prevEmployee) => ({
-          ...prevEmployee,
-          address: {
-            ...prevEmployee.address,
-            ['state']: '',
-          },
-        }));
-        setIsFormValid(false);
-      }
-    } catch (error) {
-      console.error("Error fetching states:", error);
-      toast.error("Error fetching states");
-    }
-  }
-
-  // Fetch cities based on selected state
-  async function fetchCities(stateName) {
-    try {
-      const response = await api.get(
-        `/emp/cities${stateName === "Maharashtra" || stateName === "Telangana"
-          ? "?state_name=" + stateName
-          : ""
-        }`
-      );
-      setCities(response.data);
-      if (employee.address.city) {
-        setEmployee((prevEmployee) => ({
-          ...prevEmployee,
-          address: {
-            ...prevEmployee.address,
-            ['city']: '',
-          },
-        }));
-        setIsFormValid(false);
-      }
-    } catch (error) {
-      console.error("Error fetching cities:", error);
-      toast.error("Error fetching cities");
-    }
-  }
 
   // for Input change and Validations
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    if (name.startsWith("address.")) {
-      const addressField = name.split(".")[1];
-      setEmployee((prevEmployee) => ({
-        ...prevEmployee,
-        address: {
-          ...prevEmployee.address,
-          [addressField]: value,
-        },
-      }));
-    } else {
-      setEmployee((prevEmployee) => ({
-        ...prevEmployee,
+      setProduct((prevProduct) => ({
+        ...prevProduct,
         [name]: value,
       }));
-    }
-    setIsFormValid($("#employeeForm").valid());
+    setIsFormValid($("#productForm").valid());
   };
 
   // Submit Update if isEdit else Submint Create
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsFormValid($("#employeeForm").valid());
+    setIsFormValid($("#productForm").valid());
     if (isFormValid) {
       try {
         if (isEdit) {
-          await api.put(`/emp/${id}`, [employee, Xemployee]);
+          await api.put(`/product/${id}`, [product, Xproduct]);
           toast((t) => (
             <span>
-              Employee Details Updated !
+              Product Details Updated !
               <button
                 style={{
                   border: "none",
@@ -174,10 +88,10 @@ const EmployeeForm = () => {
             </span>
           ));
         } else {
-          await api.post("/emp", employee);
+          await api.post("/emp", product);
           toast((t) => (
             <span>
-              Employee Created !
+              Product Created !
               <button
                 style={{
                   border: "none",
@@ -198,7 +112,7 @@ const EmployeeForm = () => {
           setIsDone(true);
         }, 1500);
       } catch (error) {
-        console.error("Error submitting employee:", error);
+        console.error("Error submitting product:", error);
         toast.error(error);
       }
     } else {
@@ -208,12 +122,12 @@ const EmployeeForm = () => {
 
   // for Deleting data
   const handleDelete = async () => {
-    if (confirm("Do you want to Delete this Employee")) {
+    if (confirm("Do you want to Delete this Product")) {
       try {
-        await api.delete(`/emp/${id}`, { data: employee });
+        await api.delete(`/product/${id}`, { data: product });
         setIsDeleted(true);
       } catch (error) {
-        console.error("Error deleting employee:", error);
+        console.error("Error deleting product:", error);
       }
     }
   };
@@ -228,9 +142,9 @@ const EmployeeForm = () => {
       <dialog>
         <Loader />
       </dialog>
-      <h2 className="mb-4">{isEdit ? "Edit" : "Create"} Employee</h2>
-      <form id="employeeForm" onSubmit={handleSubmit} className="p-3">
-        <input type="hidden" name="EmployeeID" />
+      <h2 className="mb-4">{isEdit ? "Edit" : "Create"} Product</h2>
+      <form id="productForm" onSubmit={handleSubmit} className="p-3">
+        <input type="hidden" name="ProductID" />
         <div className="grid">
           <div>
             <span>Name</span>
@@ -238,7 +152,7 @@ const EmployeeForm = () => {
               <input
                 type="text"
                 name="name"
-                value={employee.name}
+                value={product.name}
                 onChange={handleInputChange}
                 onInput={(e) => {
                   e.target.value = e.target.value.replace(/[^A-Za-z\s]/g, "");
@@ -257,7 +171,7 @@ const EmployeeForm = () => {
               <input
                 type="number"
                 name="phone"
-                value={employee.phone}
+                value={product.phone}
                 onChange={handleInputChange}
                 className="form-control"
                 placeholder="Phone / Mobile"
@@ -273,7 +187,7 @@ const EmployeeForm = () => {
             <span>
               <select
                 name="address.country"
-                value={employee.address.country}
+                value={product.address}
                 onChange={(e) => {
                   handleInputChange(e);
                   fetchStates(e.target.value);
@@ -285,14 +199,7 @@ const EmployeeForm = () => {
                 <option value="" disabled>
                   --Select a Country--
                 </option>
-                {countries.map((country) => (
-                  <option
-                    key={country.country_short_name}
-                    value={country.country_name}
-                  >
-                    {country.country_name}
-                  </option>
-                ))}
+              
               </select>
             </span>
           </div>
@@ -301,7 +208,7 @@ const EmployeeForm = () => {
             <span>
               <select
                 name="address.state"
-                value={employee.address.state}
+                value={product.address}
                 onChange={(e) => {
                   handleInputChange(e);
                   fetchCities(e.target.value);
@@ -313,11 +220,7 @@ const EmployeeForm = () => {
                 <option value="" disabled>
                   --Select a State--
                 </option>
-                {states.map((state) => (
-                  <option key={state.state_name} value={state.state_name}>
-                    {state.state_name}
-                  </option>
-                ))}
+              
               </select>
             </span>
           </div>
@@ -326,7 +229,7 @@ const EmployeeForm = () => {
             <span>
               <select
                 name="address.city"
-                value={employee.address.city}
+                value={product.address}
                 onChange={handleInputChange}
                 className="form-control"
                 id="citiDropdown"
@@ -335,11 +238,7 @@ const EmployeeForm = () => {
                 <option value="" disabled>
                   --Select a City--
                 </option>
-                {cities.map((city) => (
-                  <option key={city.city_name} value={city.city_name}>
-                    {city.city_name}
-                  </option>
-                ))}
+                
               </select>
             </span>
           </div>
@@ -349,7 +248,7 @@ const EmployeeForm = () => {
               <input
                 type="number"
                 name="address.zipCode"
-                value={employee.address.zipCode}
+                value={product.address}
                 onChange={handleInputChange}
                 className="form-control"
                 placeholder="Zip Code / Postal Code"
@@ -400,4 +299,4 @@ const EmployeeForm = () => {
     </>
   );
 };
-export default EmployeeForm;
+export default ProductForm;
