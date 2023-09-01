@@ -11,7 +11,7 @@ function ProductList() {
   useEffect(() => {
     async function fetchProducts() {
       setIsLoading(true);
-      const response = await api.get("/emp");
+      const response = await api.get("/product");
       setProducts(response.data);
       setTimeout(() => {
         document.querySelector("dialog").close();
@@ -26,8 +26,8 @@ function ProductList() {
     if (confirm("Do you want to delete this Product")) {
       setIsLoading(true);
       try {
-        const response = await api.get(`/prod/${id}`);
-        await api.delete(`/prod/${id}`, { data: response.data });
+        const response = await api.get(`/product/${id}`);
+        await api.delete(`/product/${id}`, { data: response.data });
         window.location.reload();
       } catch (error) {
         console.error("Error deleting product:", error);
@@ -43,8 +43,8 @@ function ProductList() {
   ) : (
     <>
       <h2>
-        Products{" "}
-          <Link to={"add"} className="btn btn-success btn-sm text-white ms-3">
+        Products
+          <Link to={"/product/add"} className="btn btn-success btn-sm text-white ms-3">
             <i className="bi bi-person-plus"></i> Create
         </Link>
       </h2>
@@ -71,7 +71,7 @@ function ProductList() {
                   }}
                 >
                   <Link
-                    to={"product/edit/" + product.productId}
+                    to={"/product/edit/" + product.productId}
                     className="btn btn-sm btn-primary text-white"
                   >
                     <i className="bi bi-pencil-square"></i> Edit
@@ -88,7 +88,7 @@ function ProductList() {
           </tbody>
         </table>
       ) : (
-        <>Employess Not Available !</>
+        <>Products Not Available !</>
       )}
     </>
   );

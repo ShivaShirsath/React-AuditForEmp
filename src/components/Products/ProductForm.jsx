@@ -1,118 +1,76 @@
-import { useState, useEffect } from "react";
-import { useParams, Navigate } from "react-router-dom";
-import api from "../../utils/api";
-import $ from "jquery";
-import "jquery-validation";
-import "jquery-validation-unobtrusive";
-import { toast } from "react-hot-toast";
-import { Loader } from "../../assets/Loader";
+import React, { useState, useEffect } from 'react';
+import { useParams, Navigate } from 'react-router-dom';
+import api from '../../utils/api';
+import { toast } from 'react-hot-toast';
+import { Loader } from '../../assets/Loader';
 
 const ProductForm = () => {
   const { id } = useParams();
   const isEdit = id !== undefined;
   const [isDone, setIsDone] = useState(null);
-  
   const [isFormValid, setIsFormValid] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
   const [product, setProduct] = useState({
     name: '',
-    category: '', //(Hardware, Software, Networking, Security, etc.)
+    category: '', // (Hardware, Software, Networking, Security, etc.)
     description: '',
-    price: '',
-    compatibility:'', //(Operating systems, software versions, etc.)
+    compatibility: '', // (Operating systems, software versions, etc.)
   });
   const [Xproduct, setXProduct] = useState({
     name: '',
-    category: '', //(Hardware, Software, Networking, Security, etc.)
+    category: '',
     description: '',
-    price: '',
-    compatibility: '', //(Operating systems, software versions, etc.)
+    compatibility: '',
   });
 
-  // Fetch existing Product data on edit
+  // Fetch existing product data on edit
   useEffect(() => {
     async function fetchProduct() {
-      document.querySelector("dialog").showModal();
+      document.querySelector('dialog').showModal();
       try {
-        const response = await api.get(`/emp/${id}`);
+        const response = await api.get(`/product/${id}`);
         setXProduct(response.data);
         setProduct(response.data);
       } catch (error) {
-        toast.error(`Product not Found !`);
+        toast.error('Product not Found!');
         setIsDone(true);
       }
-      document.querySelector("dialog").close();
+      document.querySelector('dialog').close();
     }
     if (isEdit) {
       fetchProduct();
     }
   }, [id, isEdit]);
 
-  // Fetch countries and initial states
-  useEffect(() => {
-    $("#productForm").validate();
-  }, []);
-
-  // for Input change and Validations
+  // Handle input change and form validation
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-      setProduct((prevProduct) => ({
-        ...prevProduct,
-        [name]: value,
-      }));
-    setIsFormValid($("#productForm").valid());
+    setProduct((prevProduct) => ({
+      ...prevProduct,
+      [name]: value,
+    }));
+    setIsFormValid(true); // You might want to implement validation logic here
   };
 
-  // Submit Update if isEdit else Submint Create
+  // Submit Update if isEdit else Submit Create
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsFormValid($("#productForm").valid());
     if (isFormValid) {
       try {
         if (isEdit) {
           await api.put(`/product/${id}`, [product, Xproduct]);
-          toast((t) => (
-            <span>
-              Product Details Updated !
-              <button
-                style={{
-                  border: "none",
-                  backgroundColor: "transparent",
-                }}
-                onClick={() => {
-                  toast.dismiss(t.id);
-                }}
-              >
-                ❌
-              </button>
-            </span>
-          ));
+          toast.success('Product Details Updated!');
         } else {
-          await api.post("/emp", product);
-          toast((t) => (
-            <span>
-              Product Created !
-              <button
-                style={{
-                  border: "none",
-                  backgroundColor: "transparent",
-                }}
-                onClick={() => {
-                  toast.dismiss(t.id);
-                }}
-              >
-                ❌
-              </button>
-            </span>
-          ));
+          await api.post('/product', product);
+          toast.success('Product Created!');
         }
-        document.querySelector("dialog").showModal();
+        document.querySelector('dialog').showModal();
         setTimeout(() => {
-          document.querySelector("dialog").close();
+          document.querySelector('dialog').close();
           setIsDone(true);
         }, 1500);
       } catch (error) {
-        console.error("Error submitting product:", error);
+        console.error('Error submitting product:', error);
         toast.error(error);
       }
     } else {
@@ -120,21 +78,21 @@ const ProductForm = () => {
     }
   };
 
-  // for Deleting data
+  // Handle product deletion
   const handleDelete = async () => {
-    if (confirm("Do you want to Delete this Product")) {
+    if (confirm('Do you want to Delete this Product?')) {
       try {
         await api.delete(`/product/${id}`, { data: product });
         setIsDeleted(true);
       } catch (error) {
-        console.error("Error deleting product:", error);
+        console.error('Error deleting product:', error);
       }
     }
   };
 
   // Redirect after successful submission or deletion
   if (isDone || isDeleted) {
-    return <Navigate to="/" />;
+    return <Navigate to="/products" />;
   }
 
   return (
@@ -142,9 +100,9 @@ const ProductForm = () => {
       <dialog>
         <Loader />
       </dialog>
-      <h2 className="mb-4">{isEdit ? "Edit" : "Create"} Product</h2>
-      <form id="productForm" onSubmit={handleSubmit} className="p-3">
-        <input type="hidden" name="ProductID" />
+      <h2 className="mb-4">{isEdit ? 'Edit' : 'Create'} Product</h2>
+      <form onSubmit={handleSubmit} className="p-3">
+        <input type="hidden" name="ProductId" />
         <div className="grid">
           <div>
             <span>Name</span>
@@ -154,107 +112,62 @@ const ProductForm = () => {
                 name="name"
                 value={product.name}
                 onChange={handleInputChange}
-                onInput={(e) => {
-                  e.target.value = e.target.value.replace(/[^A-Za-z\s]/g, "");
-                }}
                 className="form-control"
-                placeholder="Full Name"
+                placeholder="Product Name"
                 required
-                minLength="3"
-                maxLength="20"
               />
             </span>
           </div>
           <div>
-            <span>Phone</span>
+            <span>Category</span>
             <span>
-              <input
-                type="number"
-                name="phone"
-                value={product.phone}
+              <select
+                name="category"
+                value={product.category}
                 onChange={handleInputChange}
                 className="form-control"
-                placeholder="Phone / Mobile"
                 required
-                pattern="^\d{10}$"
-                minLength="10"
-                maxLength="15"
+              >
+                <option value="" disabled>
+                  --Select a Category--
+                </option>
+                <option value="Hardware">Hardware</option>
+                <option value="Software">Software</option>
+                <option value="Networking">Networking</option>
+                <option value="Security">Security</option>
+                {/* Add more options as needed */}
+              </select>
+            </span>
+          </div>
+          <div>
+            <span>Description</span>
+            <span>
+              <textarea
+                name="description"
+                value={product.description}
+                onChange={handleInputChange}
+                className="form-control"
+                placeholder="Product Description"
               />
             </span>
           </div>
           <div>
-            <span>Country</span>
+            <span>Compatibility</span>
             <span>
               <select
-                name="address.country"
-                value={product.address}
-                onChange={(e) => {
-                  handleInputChange(e);
-                  fetchStates(e.target.value);
-                }}
-                className="form-control"
-                id="countryDropdown"
-                required
-              >
-                <option value="" disabled>
-                  --Select a Country--
-                </option>
-              
-              </select>
-            </span>
-          </div>
-          <div>
-            <span>State</span>
-            <span>
-              <select
-                name="address.state"
-                value={product.address}
-                onChange={(e) => {
-                  handleInputChange(e);
-                  fetchCities(e.target.value);
-                }}
-                id="stateDropdown"
-                className="form-control"
-                required
-              >
-                <option value="" disabled>
-                  --Select a State--
-                </option>
-              
-              </select>
-            </span>
-          </div>
-          <div>
-            <span>City</span>
-            <span>
-              <select
-                name="address.city"
-                value={product.address}
+                name="compatibility"
+                value={product.compatibility}
                 onChange={handleInputChange}
                 className="form-control"
-                id="citiDropdown"
-                required
               >
                 <option value="" disabled>
-                  --Select a City--
+                  -- Select a Option --
                 </option>
-                
+                <option value="Operating System">Operating System</option>
+                <option value="Software Version">Software Version</option>
+                <option value="Hardware Compatibility">Hardware Compatibility</option>
+                {/* Add more options as needed */}
               </select>
-            </span>
-          </div>
-          <div>
-            <span>Zip Code</span>
-            <span>
-              <input
-                type="number"
-                name="address.zipCode"
-                value={product.address}
-                onChange={handleInputChange}
-                className="form-control"
-                placeholder="Zip Code / Postal Code"
-                required
-                minLength="6"
-              />
             </span>
           </div>
           <div>
@@ -299,4 +212,5 @@ const ProductForm = () => {
     </>
   );
 };
+
 export default ProductForm;

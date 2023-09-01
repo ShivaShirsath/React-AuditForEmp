@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "../utils/api";
 import { Loader } from "../assets/Loader";
-import { toast } from "react-hot-toast";
+import uuid from "react-uuid";
 /**
  * Component to display audit logs.
  * Fetches audit data and renders in a table format.
@@ -51,13 +51,13 @@ const AuditLog = () => {
   }, []);
 
   useEffect(() => {
-    if (eventType === "all") {
-      setActionList([]);
-    }
     if (currentPage === 0) {
       console.log("MT");
     } else {
       fetchAuditLog();
+    }
+    if (eventType === "all") {
+      setActionList([]);
     }
   }, [currentPage, eventType, action]);
 
@@ -71,16 +71,22 @@ const AuditLog = () => {
         )
       );
     }
-  },[eventType])
+  }, [eventType]);
 
   useEffect(() => {
     setCurrentPage(1);
-    if (Array.isArray(eventTypeList) && eventTypeList.length) {
+    if (
+      Array.isArray(eventTypeList) &&
+      eventTypeList.length &&
+      eventType !== "all"
+    ) {
       setActionList(
         eventTypeList.map((event) =>
           event.substring(event.indexOf("Api/") + 4, event.length)
         )
       );
+    } else if (eventType === "all") {
+      setActionList([]);
     }
   }, [eventTypeList]);
 
@@ -127,24 +133,30 @@ const AuditLog = () => {
     if (!isBody)
       return (
         <tr
+          key={uuid()}
           style={{
             borderBottom: "solid",
           }}
         >
           {/* <th>Table Name</th> */}
-          <th></th>
+          <th key={`mt-${uuid()}`}></th>
           {Object.entries(data).map(([key, value]) => {
             if (!key.includes("Id"))
-              return <th key={`th-${key}-${value}`}>{key.replace(".", "")}</th>;
+              return (
+                <th key={`th-${key}-${value}${uuid()}`}>
+                  {key.replace(".", "")}
+                </th>
+              );
             else return <></>;
           })}
-          <th>Modified Date</th>
+          <th key={`md-${uuid()}`}>Modified Date</th>
         </tr>
       );
     if (typeof pre !== "undefined")
       return (
         <>
           <tr
+            key={"tr-" + uuid()}
             className="border-warning border-bottom-0"
             style={{
               borderTopWidth: ".35dvmin",
@@ -323,17 +335,14 @@ const AuditLog = () => {
                     required
                   >
                     <option value={"all"}>all</option>
-                      {
-                        Array.from(new Set(eventTypeList.map((ev) => 
-                          ev.substring(
-                            0,
-                            ev.indexOf("Api/")
-                          )
-                        ))).map((event) => (
-                      <option
-                        key={event}
-                        value=/*{event}*/ {event}
-                      >
+                    {Array.from(
+                      new Set(
+                        eventTypeList.map((ev) =>
+                          ev.substring(0, ev.indexOf("Api/"))
+                        )
+                      )
+                    ).map((event) => (
+                      <option key={event} value=/*{event}*/ {event}>
                         {/* {event} */}
                         {event}
                       </option>
@@ -354,7 +363,13 @@ const AuditLog = () => {
                     required
                   >
                     <option value={"all"}>all</option>
-                    {actionList.map((event) => (
+                      {Array.from(
+                        new Set(
+                          actionList.map((ev) =>
+                            ev
+                          )
+                        )
+                      ).map((event) => (
                       <option
                         key={event.substring(0, event.indexOf("Api/"))}
                         value={
@@ -399,16 +414,67 @@ const AuditLog = () => {
                     ? createTable(
                         item.eventType,
                         item.jsonData,
-                        JSON.parse(item.jsonData).Action.ActionParameters
-                          .employee
+                        JSON.parse(item["jsonData"])["Action"][
+                          "ActionParameters"
+                        ][
+                          Object.keys(
+                            JSON.parse(item["jsonData"])["Action"][
+                              "ActionParameters"
+                            ]
+                          ).length === 1
+                            ? Object.keys(
+                                JSON.parse(item["jsonData"])["Action"][
+                                  "ActionParameters"
+                                ]
+                              )[0]
+                            : Object.keys(
+                                JSON.parse(item["jsonData"])["Action"][
+                                  "ActionParameters"
+                                ]
+                              )[1]
+                        ]
                       )
                     : createTable(
                         item.eventType,
                         item.jsonData,
-                        JSON.parse(item.jsonData).Action.ActionParameters
-                          .employee[0],
-                        JSON.parse(item.jsonData).Action.ActionParameters
-                          .employee[1]
+                      JSON.parse(item["jsonData"])["Action"][
+                      "ActionParameters"
+                      ][
+                      Object.keys(
+                        JSON.parse(item["jsonData"])["Action"][
+                        "ActionParameters"
+                        ]
+                      ).length === 1
+                        ? Object.keys(
+                          JSON.parse(item["jsonData"])["Action"][
+                          "ActionParameters"
+                          ]
+                        )[0]
+                        : Object.keys(
+                          JSON.parse(item["jsonData"])["Action"][
+                          "ActionParameters"
+                          ]
+                        )[1]
+                      ],
+                      JSON.parse(item["jsonData"])["Action"][
+                      "ActionParameters"
+                      ][
+                      Object.keys(
+                        JSON.parse(item["jsonData"])["Action"][
+                        "ActionParameters"
+                        ]
+                      ).length === 1
+                        ? Object.keys(
+                          JSON.parse(item["jsonData"])["Action"][
+                          "ActionParameters"
+                          ]
+                        )[0]
+                        : Object.keys(
+                          JSON.parse(item["jsonData"])["Action"][
+                          "ActionParameters"
+                          ]
+                        )[1]
+                      ]
                       )
                 )}
             </tbody>

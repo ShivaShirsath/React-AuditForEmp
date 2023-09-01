@@ -1,47 +1,37 @@
 import { useState, useEffect } from "react";
 import { useParams, Navigate } from "react-router-dom";
 import api from "../../utils/api";
-import $ from "jquery";
-import "jquery-validation";
-import "jquery-validation-unobtrusive";
 import { toast } from "react-hot-toast";
 import { Loader } from "../../assets/Loader";
-/*
- * Component for adding or editing service details.
- * Fetches data, handles form submissions, and validation.
- */
-const ProductForm = () => {
+
+const ServiceForm = () => {
   const { id } = useParams();
   const isEdit = id !== undefined;
   const [isDone, setIsDone] = useState(null);
-
   const [isFormValid, setIsFormValid] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
   const [service, setService] = useState({
-    name: '',
-    type: '', //(Consulting, Support, Development, Maintenance, etc.)
-    info: '',
-    tech: '',
-    provider: '',
+    name: "",
+    type: "",
+    info: "",
+    provider: "",
   });
   const [Xservice, setXService] = useState({
-    name: '',
-    type: '', //(Consulting, Support, Development, Maintenance, etc.)
-    info: '',
-    tech: '',
-    provider: '',
+    name: "",
+    type: "",
+    info: "",
+    provider: "",
   });
-
   // Fetch existing service data on edit
   useEffect(() => {
     async function fetchService() {
       document.querySelector("dialog").showModal();
       try {
-        const response = await api.get(`/emp/${id}`);
+        const response = await api.get(`/service/${id}`);
         setXService(response.data);
         setService(response.data);
       } catch (error) {
-        toast.error(`Service not Found !`);
+        toast.error("Service not found!");
         setIsDone(true);
       }
       document.querySelector("dialog").close();
@@ -51,71 +41,35 @@ const ProductForm = () => {
     }
   }, [id, isEdit]);
 
-  // Fetch countries and initial states
-  useEffect(() => {
-    $("#serviceForm").validate();
-  }, []);
-
-  // for Input change and Validations
+  // Input change and Validations
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setService((prevService) => ({
       ...prevService,
       [name]: value,
     }));
-    setIsFormValid($("#serviceForm").valid());
+    setIsFormValid(true); // You can add your validation logic here
   };
 
-  // Submit Update if isEdit else Submint Create
+  // Submit Update if isEdit else Submit Create
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsFormValid($("#serviceForm").valid());
     if (isFormValid) {
       try {
         if (isEdit) {
           await api.put(`/service/${id}`, [service, Xservice]);
-          toast((t) => (
-            <span>
-              Service Details Updated !
-              <button
-                style={{
-                  border: "none",
-                  backgroundColor: "transparent",
-                }}
-                onClick={() => {
-                  toast.dismiss(t.id);
-                }}
-              >
-                ❌
-              </button>
-            </span>
-          ));
+          toast.success('Service Details Updated!');
         } else {
-          await api.post("/emp", service);
-          toast((t) => (
-            <span>
-              Service Created !
-              <button
-                style={{
-                  border: "none",
-                  backgroundColor: "transparent",
-                }}
-                onClick={() => {
-                  toast.dismiss(t.id);
-                }}
-              >
-                ❌
-              </button>
-            </span>
-          ));
+          await api.post('/service', service);
+          toast.success('Service Created!');
         }
-        document.querySelector("dialog").showModal();
+        document.querySelector('dialog').showModal();
         setTimeout(() => {
-          document.querySelector("dialog").close();
+          document.querySelector('dialog').close();
           setIsDone(true);
         }, 1500);
       } catch (error) {
-        console.error("Error submitting service:", error);
+        console.error('Error submitting product:', error);
         toast.error(error);
       }
     } else {
@@ -123,9 +77,9 @@ const ProductForm = () => {
     }
   };
 
-  // for Deleting data
+  // Handle deleting data
   const handleDelete = async () => {
-    if (confirm("Do you want to Delete this Service")) {
+    if (confirm("Do you want to Delete this Service?")) {
       try {
         await api.delete(`/service/${id}`, { data: service });
         setIsDeleted(true);
@@ -137,7 +91,7 @@ const ProductForm = () => {
 
   // Redirect after successful submission or deletion
   if (isDone || isDeleted) {
-    return <Navigate to="/" />;
+    return <Navigate to="/services" />;
   }
 
   return (
@@ -146,8 +100,8 @@ const ProductForm = () => {
         <Loader />
       </dialog>
       <h2 className="mb-4">{isEdit ? "Edit" : "Create"} Service</h2>
-      <form id="serviceForm" onSubmit={handleSubmit} className="p-3">
-        <input type="hidden" name="ServiceID" />
+      <form onSubmit={handleSubmit} className="p-3">
+        <input type="hidden" name="ServiceId" />
         <div className="grid">
           <div>
             <span>Name</span>
@@ -157,106 +111,54 @@ const ProductForm = () => {
                 name="name"
                 value={service.name}
                 onChange={handleInputChange}
-                onInput={(e) => {
-                  e.target.value = e.target.value.replace(/[^A-Za-z\s]/g, "");
-                }}
                 className="form-control"
-                placeholder="Full Name"
+                placeholder="Service Name"
                 required
-                minLength="3"
-                maxLength="20"
               />
             </span>
           </div>
           <div>
-            <span>Phone</span>
+            <span>Type</span>
             <span>
-              <input
-                type="number"
-                name="phone"
-                value={service.phone}
+              <select
+                name="type"
+                value={service.type}
                 onChange={handleInputChange}
                 className="form-control"
-                placeholder="Phone / Mobile"
                 required
-                pattern="^\d{10}$"
-                minLength="10"
-                maxLength="15"
+              >
+                <option value="">-- Select a Type --</option>
+                <option value="Consulting">Consulting</option>
+                <option value="Support">Support</option>
+                <option value="Development">Development</option>
+                <option value="Maintenance">Maintenance</option>
+                {/* Add more options as needed */}
+              </select>
+            </span>
+          </div>
+
+          <div>
+            <span>Info</span>
+            <span>
+              <textarea
+                name="info"
+                value={service.info}
+                onChange={handleInputChange}
+                className="form-control"
+                placeholder="Service Info"
               />
             </span>
           </div>
           <div>
-            <span>Country</span>
-            <span>
-              <select
-                name="address.country"
-                value={service.address}
-                onChange={(e) => {
-                  handleInputChange(e);
-                  fetchStates(e.target.value);
-                }}
-                className="form-control"
-                id="countryDropdown"
-                required
-              >
-                <option value="" disabled>
-                  --Select a Country--
-                </option>
-
-              </select>
-            </span>
-          </div>
-          <div>
-            <span>State</span>
-            <span>
-              <select
-                name="address.state"
-                value={service.address}
-                onChange={(e) => {
-                  handleInputChange(e);
-                  fetchCities(e.target.value);
-                }}
-                id="stateDropdown"
-                className="form-control"
-                required
-              >
-                <option value="" disabled>
-                  --Select a State--
-                </option>
-
-              </select>
-            </span>
-          </div>
-          <div>
-            <span>City</span>
-            <span>
-              <select
-                name="address.city"
-                value={service.address}
-                onChange={handleInputChange}
-                className="form-control"
-                id="citiDropdown"
-                required
-              >
-                <option value="" disabled>
-                  --Select a City--
-                </option>
-
-              </select>
-            </span>
-          </div>
-          <div>
-            <span>Zip Code</span>
+            <span>Provider</span>
             <span>
               <input
-                type="number"
-                name="address.zipCode"
-                value={service.address}
+                type="text"
+                name="provider"
+                value={service.provider}
                 onChange={handleInputChange}
                 className="form-control"
-                placeholder="Zip Code / Postal Code"
-                required
-                minLength="6"
+                placeholder="Service Provider"
               />
             </span>
           </div>
@@ -302,4 +204,5 @@ const ProductForm = () => {
     </>
   );
 };
-export default ProductForm;
+
+export default ServiceForm;
