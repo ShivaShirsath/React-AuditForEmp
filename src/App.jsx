@@ -5,10 +5,10 @@ import AuditLog from './components/AuditLog';
 import { Link } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import ServicesList from './components/Services/ServicesList';
-import ServiceForm from './components/Products/ProductForm';
-import ServicesForm from './components/Services/ServicesForm';
 import ProductList from './components/Products/ProductList';
 import ProductForm from './components/Products/ProductForm';
+import ServicesForm from './components/Services/ServicesForm';
+import 'react-bootstrap-toggle/dist/bootstrap2-toggle.css'
 /*
  * Main application component.
  * Handles routing and navigation.

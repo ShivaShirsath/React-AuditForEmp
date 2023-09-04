@@ -175,9 +175,6 @@ svg#load {
   margin-top: 3dvmin;
 }
 
-.inAudit>tr>th:nth-child(2){
-  border-right: 0.35dvmin solid black !important;
-}
 .inAudit>tr>th{
   border-right: 0.15dvmin solid black !important;
 }
@@ -199,7 +196,15 @@ svg#load {
   z-index: 1000;
 }
 
-tr>th:first-child{
+tr>*:first-child{
   text-align: right;
 }
 
+.pagination{
+  padding: 1dvmin;
+  gap: 1dvmin;
+}
+
+.pagination>button[disabled]{
+  display: none;
+}

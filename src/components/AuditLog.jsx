@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import api from "../utils/api";
 import { Loader } from "../assets/Loader";
 import uuid from "react-uuid";
+import Toggle from 'react-bootstrap-toggle';
+
 /**
  * Component to display audit logs.
  * Fetches audit data and renders in a table format.
@@ -17,22 +19,25 @@ const AuditLog = () => {
   const [action, setAction] = useState("all");
   const [eventTypeList, setEventTypeList] = useState([]);
   const [actionList, setActionList] = useState([]);
+  const [isAssending, setIsAssending] = useState(false);
 
   // Fetch audit log data on component mount
   async function fetchAuditLog() {
     setIsLoading(true);
     const response = await api.get(
-      `/audit?eventType=${
-        eventType === "all"
-          ? "all"
-          : eventType + (action === "all" ? "" : "Api/" + action)
+      `/audit?eventType=${eventType === "all"
+        ? "all"
+        : eventType + (action === "all" ? "" : "Api/" + action)
       }&page=${currentPage}`
     );
-    setAuditLog(response.data.events);
+    setAuditLog(response.data.data);
     setTotalPages(response.data.totalPages);
     setIsLoading(false);
   }
-
+  useEffect(() => {
+    setAuditLog(auditLog.slice()
+      .reverse())
+  }, [isAssending]);
   async function fetchAuditTables() {
     setIsLoading(true);
     const response = await api.get(`/audit/Tables`);
@@ -66,9 +71,18 @@ const AuditLog = () => {
       setActionList([]);
     } else if (Array.isArray(eventTypeList) && eventTypeList.length) {
       setActionList(
-        eventTypeList.map((event) =>
-          event.substring(event.indexOf("Api/") + 4, event.length)
-        )
+        eventTypeList
+          .filter((event) => event.includes(eventType))
+          .map((ev) => ev.substring(ev.indexOf("Api/") + 4, ev.length))
+      );
+      setAction(
+        Object.values(
+          eventTypeList
+            .filter((event) => event.includes(eventType))
+            .map((ev) => ev.substring(ev.indexOf("Api/") + 4, ev.length))
+        ).includes(action)
+          ? action
+          : "all"
       );
     }
   }, [eventType]);
@@ -81,9 +95,9 @@ const AuditLog = () => {
       eventType !== "all"
     ) {
       setActionList(
-        eventTypeList.map((event) =>
-          event.substring(event.indexOf("Api/") + 4, event.length)
-        )
+        eventTypeList
+          .filter((event) => event.includes(eventType))
+          .map((ev) => ev.substring(ev.indexOf("Api/") + 4, ev.length))
       );
     } else if (eventType === "all") {
       setActionList([]);
@@ -94,7 +108,7 @@ const AuditLog = () => {
   const convertUTCToIST = (data) => {
     const istDateTime = new Date(
       new Date(new Date(JSON.parse(data).StartDate).toISOString()).getTime() +
-        5.5 * 60 * 60 * 1000
+      5.5 * 60 * 60 * 1000
     );
     return `${istDateTime.getUTCFullYear()}-${String(
       istDateTime.getUTCMonth() + 1
@@ -107,26 +121,28 @@ const AuditLog = () => {
   };
 
   // for returning according to Type
-  const returnType = (type, text = false) => {
-    return type === "POST Employees/Create" || type === "EmployeeApi/Create"
+  const returnType = (type, text = false, isAll = false) => {
+    return type.includes("Create")
       ? text
         ? "Added"
         : "success"
-      : type === "POST Employees/Delete" || type === "EmployeeApi/Delete"
-      ? text
-        ? "Deleted"
-        : "danger"
-      : type === "POST Employees/Edit" || type === "EmployeeApi/Update"
-      ? text
-        ? ""
-        : "warning"
-      : type === "GET Employees/Details" || type === "EmployeeApi/Details"
-      ? text
-        ? ""
-        : "primary"
-      : text
-      ? ""
-      : "dark";
+      : type.includes("Delete")
+        ? text
+          ? "Deleted"
+          : "danger"
+        : type.includes("Edit") || type.includes("Update")
+          ? text
+            ? isAll
+              ? "Updated"
+              : ""
+            : "warning"
+          : type.includes("Details")
+            ? text
+              ? ""
+              : "primary"
+            : text
+              ? ""
+              : "dark";
   };
 
   const generateTableBody = (data, date, isBody, type, pre) => {
@@ -210,9 +226,8 @@ const AuditLog = () => {
               else return <></>;
             })}
             <td
-              key={`td-mt-${data[Object.keys(data)[0]]}-${
-                pre[Object.keys(pre)[0]]
-              }`}
+              key={`td-mt-${data[Object.keys(data)[0]]}-${pre[Object.keys(pre)[0]]
+                }`}
             ></td>
           </tr>
         </>
@@ -227,7 +242,8 @@ const AuditLog = () => {
         >
           {/* <td>{type.substring(0, type.indexOf("Api/"))}</td> */}
           <th className={`text-${returnType(type, false)}`}>
-            {returnType(type, true)} Values
+            {returnType(type, true, eventType === "all")}{" "}
+            {eventType === "all" ? "" : "Values"}
           </th>
           {Object.entries(data).map(([key, value]) => {
             if (!key.includes("Id")) return <td>{isBody ? value : key}</td>;
@@ -245,7 +261,14 @@ const AuditLog = () => {
       );
   };
 
-  const flattenObject = (obj, parentKey = "") => {
+  const flattenObject = (obj, parentKey = "", tableName) => {
+    if (eventType === "all")
+      return {
+        "Table Name":
+          tableName !== undefined
+            ? tableName.substring(0, tableName.indexOf("Api/"))
+            : "",
+      };
     let result = {};
 
     for (const key in obj) {
@@ -263,15 +286,15 @@ const AuditLog = () => {
   };
 
   // Create table rows for different event types
-  const createTable = (eventType, jsonData, data, pre) => {
-    if (eventType === "Head")
+  const createTable = (EventType, jsonData, data, pre) => {
+    if (EventType === "Head")
       return (
         <>
           {generateTableBody(
             flattenObject(data),
             convertUTCToIST(jsonData),
             false,
-            eventType,
+            EventType,
             flattenObject(pre)
           )}
         </>
@@ -281,11 +304,11 @@ const AuditLog = () => {
       return (
         <>
           {generateTableBody(
-            flattenObject(data),
+            flattenObject(data, "", EventType),
             convertUTCToIST(jsonData),
             true,
-            eventType,
-            flattenObject(pre)
+            EventType,
+            eventType === "all" ? undefined : flattenObject(pre, "", EventType)
           )}
         </>
       );
@@ -296,10 +319,10 @@ const AuditLog = () => {
       return (
         <>
           {generateTableBody(
-            flattenObject(data),
+            flattenObject(data, "", EventType),
             convertUTCToIST(jsonData),
             true,
-            eventType
+            EventType
           )}
         </>
       );
@@ -311,7 +334,18 @@ const AuditLog = () => {
       <Loader />
     </dialog>
   ) : (
-    <div>
+    <div><div style={{ textAlign: 'right' }}>
+      <Toggle
+        onClick={() => {
+          setIsAssending(!isAssending);
+        }}
+        on={'Assending'}
+        off={'Decending'}
+        size="xs"
+        offstyle="danger"
+        active={isAssending}
+      />
+    </div>
       <h1 className="text-center mb-4">
         Audit Logs {auditLog.length === 0 && "not found !"}
       </h1>
@@ -320,8 +354,10 @@ const AuditLog = () => {
         <>
           <table className="table table-bordered inAudit">
             <tbody className="w-100 inAudit">
-              <tr>
-                <th>Table Name</th>
+              <tr style={{
+                borderBottom: 'solid'
+              }}>
+                <th>{eventType === 'all' ? "Select Table" : "Table Name"}</th>
                 <td>
                   <select
                     name="eventType"
@@ -349,139 +385,134 @@ const AuditLog = () => {
                     ))}
                   </select>
                 </td>
-                <th>Action</th>
-                <td>
-                  <select
-                    name="action"
-                    value={action}
-                    className="form-select"
-                    onChange={(e) => {
-                      const { name, value } = e.target;
-                      setAction(value);
-                    }}
-                    id="actionDropdown"
-                    required
-                  >
-                    <option value={"all"}>all</option>
-                      {Array.from(
-                        new Set(
-                          actionList.map((ev) =>
-                            ev
-                          )
-                        )
-                      ).map((event) => (
-                      <option
-                        key={event.substring(0, event.indexOf("Api/"))}
-                        value={
-                          event
-                        } /*{event.substring(0, event.indexOf("Api/"))}*/
+                {
+                  eventType !== 'all' &&
+                  <>
+                    <th>Action</th>
+                    <td>
+                      <select
+                        name="action"
+                        value={action}
+                        className="form-select"
+                        onChange={(e) => {
+                          const { name, value } = e.target;
+                          setAction(value);
+                        }}
+                        id="actionDropdown"
+                        required
                       >
-                        {event}
-                        {/* {event.substring(0, event.indexOf("Api/"))} */}
-                      </option>
-                    ))}
-                  </select>
-                </td>
+                        <option value={"all"}>all</option>
+                        {Array.from(new Set(actionList.map((ev) => ev))).map(
+                          (event) => (
+                            <option
+                              key={event.substring(0, event.indexOf("Api/"))}
+                              value={
+                                event
+                              } /*{event.substring(0, event.indexOf("Api/"))}*/
+                            >
+                              {event}
+                              {/* {event.substring(0, event.indexOf("Api/"))} */}
+                            </option>
+                          )
+                        )}
+                      </select>
+                    </td> </>}
               </tr>
               {createTable(
                 "Head",
                 auditLog[0]["jsonData"],
                 JSON.parse(auditLog[0]["jsonData"])["Action"][
-                  "ActionParameters"
+                "ActionParameters"
                 ][
-                  Object.keys(
+                Object.keys(
+                  JSON.parse(auditLog[0]["jsonData"])["Action"][
+                  "ActionParameters"
+                  ]
+                ).length === 1
+                  ? Object.keys(
                     JSON.parse(auditLog[0]["jsonData"])["Action"][
-                      "ActionParameters"
+                    "ActionParameters"
                     ]
-                  ).length === 1
-                    ? Object.keys(
-                        JSON.parse(auditLog[0]["jsonData"])["Action"][
-                          "ActionParameters"
-                        ]
-                      )[0]
-                    : Object.keys(
-                        JSON.parse(auditLog[0]["jsonData"])["Action"][
-                          "ActionParameters"
-                        ]
-                      )[1]
+                  )[0]
+                  : Object.keys(
+                    JSON.parse(auditLog[0]["jsonData"])["Action"][
+                    "ActionParameters"
+                    ]
+                  )[1]
                 ]
               )}
-              {auditLog
-                .slice()
-                .reverse()
-                .map((item) =>
-                  !item.eventType.includes("Update")
-                    ? createTable(
-                        item.eventType,
-                        item.jsonData,
-                        JSON.parse(item["jsonData"])["Action"][
-                          "ActionParameters"
-                        ][
-                          Object.keys(
-                            JSON.parse(item["jsonData"])["Action"][
-                              "ActionParameters"
-                            ]
-                          ).length === 1
-                            ? Object.keys(
-                                JSON.parse(item["jsonData"])["Action"][
-                                  "ActionParameters"
-                                ]
-                              )[0]
-                            : Object.keys(
-                                JSON.parse(item["jsonData"])["Action"][
-                                  "ActionParameters"
-                                ]
-                              )[1]
-                        ]
-                      )
-                    : createTable(
-                        item.eventType,
-                        item.jsonData,
+              {auditLog.map((item) =>
+                !item.eventType.includes("Update")
+                  ? createTable(
+                    item.eventType,
+                    item.jsonData,
+                    JSON.parse(item["jsonData"])["Action"][
+                    "ActionParameters"
+                    ][
+                    Object.keys(
                       JSON.parse(item["jsonData"])["Action"][
                       "ActionParameters"
-                      ][
-                      Object.keys(
-                        JSON.parse(item["jsonData"])["Action"][
-                        "ActionParameters"
-                        ]
-                      ).length === 1
-                        ? Object.keys(
-                          JSON.parse(item["jsonData"])["Action"][
-                          "ActionParameters"
-                          ]
-                        )[0]
-                        : Object.keys(
-                          JSON.parse(item["jsonData"])["Action"][
-                          "ActionParameters"
-                          ]
-                        )[1]
-                      ],
-                      JSON.parse(item["jsonData"])["Action"][
-                      "ActionParameters"
-                      ][
-                      Object.keys(
-                        JSON.parse(item["jsonData"])["Action"][
-                        "ActionParameters"
-                        ]
-                      ).length === 1
-                        ? Object.keys(
-                          JSON.parse(item["jsonData"])["Action"][
-                          "ActionParameters"
-                          ]
-                        )[0]
-                        : Object.keys(
-                          JSON.parse(item["jsonData"])["Action"][
-                          "ActionParameters"
-                          ]
-                        )[1]
                       ]
-                      )
-                )}
+                    ).length === 1
+                      ? Object.keys(
+                        JSON.parse(item["jsonData"])["Action"][
+                        "ActionParameters"
+                        ]
+                      )[0]
+                      : Object.keys(
+                        JSON.parse(item["jsonData"])["Action"][
+                        "ActionParameters"
+                        ]
+                      )[1]
+                    ]
+                  )
+                  : createTable(
+                    item.eventType,
+                    item.jsonData,
+                    JSON.parse(item["jsonData"])["Action"][
+                    "ActionParameters"
+                    ][
+                    Object.keys(
+                      JSON.parse(item["jsonData"])["Action"][
+                      "ActionParameters"
+                      ]
+                    ).length === 1
+                      ? Object.keys(
+                        JSON.parse(item["jsonData"])["Action"][
+                        "ActionParameters"
+                        ]
+                      )[0]
+                      : Object.keys(
+                        JSON.parse(item["jsonData"])["Action"][
+                        "ActionParameters"
+                        ]
+                      )[1]
+                    ],
+                    JSON.parse(item["jsonData"])["Action"][
+                    "ActionParameters"
+                    ][
+                    Object.keys(
+                      JSON.parse(item["jsonData"])["Action"][
+                      "ActionParameters"
+                      ]
+                    ).length === 1
+                      ? Object.keys(
+                        JSON.parse(item["jsonData"])["Action"][
+                        "ActionParameters"
+                        ]
+                      )[0]
+                      : Object.keys(
+                        JSON.parse(item["jsonData"])["Action"][
+                        "ActionParameters"
+                        ]
+                      )[1]
+                    ]
+                  )
+              )}
             </tbody>
           </table>
           <div>
             <div className="pagination">
-              <div className="page-info"></div>
               <button
                 className="btn btn-primary btn-sm"
                 disabled={currentPage === 1}
