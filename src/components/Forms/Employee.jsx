@@ -10,7 +10,7 @@ import { Loader } from "../../assets/Loader";
  * Component for adding or editing employee details.
  * Fetches data, handles form submissions, and validation.
  */
-const EmployeeForm = () => {
+const Employee = () => {
   const { id } = useParams();
   const isEdit = id !== undefined;
   const [isDone, setIsDone] = useState(null);
@@ -215,12 +215,12 @@ const EmployeeForm = () => {
       } catch (error) {
         console.error("Error deleting employee:", error);
       }
-    }
+    } else setIsFormValid(false);
   };
 
   // Redirect after successful submission or deletion
   if (isDone || isDeleted) {
-    return <Navigate to="/" />;
+    return <Navigate to="/emp" />;
   }
 
   return (
@@ -400,4 +400,4 @@ const EmployeeForm = () => {
     </>
   );
 };
-export default EmployeeForm;
+export default Employee;

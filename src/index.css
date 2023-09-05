@@ -140,7 +140,6 @@ dialog {
   background: transparent;
   border: none !important;
   outline: none !important;
-  width: 100dvmin;
   aspect-ratio: 1;
   overflow: hidden;
 }
@@ -153,58 +152,60 @@ svg#load {
 .grid {
   display: grid;
   grid-row-gap: 1dvmin;
-  grid-column-gap: .25dvmin;
+  grid-column-gap: 0.25dvmin;
   grid-template-columns: repeat(auto-fit, minmax(50vh, 1fr));
 }
 
-.grid>div {
+.grid > div {
   display: flex;
   gap: 1dvmin;
   align-items: center;
   justify-items: center;
   width: 100%;
 }
-.grid>div>*:first-child {
-  flex: .25;
+
+.grid > div > *:first-child {
+  flex: 0.25;
 }
 
-.grid>div>*:last-child {
-  flex: .6;
+.grid > div > *:last-child {
+  flex: 0.6;
 }
-.grid>div:last-child{
+
+.grid > div:last-child {
   margin-top: 3dvmin;
 }
 
-.inAudit>tr>th{
+.inAudit > tr > th {
   border-right: 0.15dvmin solid black !important;
 }
 
-.inAudit>tr>td,
-.inAudit>tr>th {
+.inAudit > tr > td,
+.inAudit > tr > th {
   border-width: 0.15dvmin;
 }
 
-.inAudit>tr>th:first-child,
-.inAudit>tr>th {
+.inAudit > tr > th:first-child:not(.all),
+.inAudit > tr > th:not(.all) {
   background-color: rgba(0, 0, 0, 0.123);
 }
 
-.pagination{
-  position: fixed;
-  bottom: 0;
-  right: 0;
+.pagination {
+  align-items: center;
   z-index: 1000;
+  display: flex;
+  justify-content: center;
 }
 
-tr>*:first-child{
+tr > *:first-child {
   text-align: right;
 }
 
-.pagination{
+.pagination {
   padding: 1dvmin;
   gap: 1dvmin;
 }
 
-.pagination>button[disabled]{
+.pagination > button[disabled] {
   display: none;
 }

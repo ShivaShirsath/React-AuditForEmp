@@ -4,7 +4,7 @@ import api from "../../utils/api";
 import { toast } from "react-hot-toast";
 import { Loader } from "../../assets/Loader";
 
-const ServiceForm = () => {
+const Service = () => {
   const { id } = useParams();
   const isEdit = id !== undefined;
   const [isDone, setIsDone] = useState(null);
@@ -86,12 +86,12 @@ const ServiceForm = () => {
       } catch (error) {
         console.error("Error deleting service:", error);
       }
-    }
+    } else setIsFormValid(false);
   };
 
   // Redirect after successful submission or deletion
   if (isDone || isDeleted) {
-    return <Navigate to="/services" />;
+    return <Navigate to="/service" />;
   }
 
   return (
@@ -136,7 +136,6 @@ const ServiceForm = () => {
               </select>
             </span>
           </div>
-
           <div>
             <span>Info</span>
             <span>
@@ -205,4 +204,4 @@ const ServiceForm = () => {
   );
 };
 
-export default ServiceForm;
+export default Service;

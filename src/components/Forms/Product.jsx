@@ -4,7 +4,7 @@ import api from '../../utils/api';
 import { toast } from 'react-hot-toast';
 import { Loader } from '../../assets/Loader';
 
-const ProductForm = () => {
+const Product = () => {
   const { id } = useParams();
   const isEdit = id !== undefined;
   const [isDone, setIsDone] = useState(null);
@@ -87,12 +87,12 @@ const ProductForm = () => {
       } catch (error) {
         console.error('Error deleting product:', error);
       }
-    }
+    } else setIsFormValid(false);
   };
 
   // Redirect after successful submission or deletion
   if (isDone || isDeleted) {
-    return <Navigate to="/products" />;
+    return <Navigate to="/product" />;
   }
 
   return (
@@ -213,4 +213,4 @@ const ProductForm = () => {
   );
 };
 
-export default ProductForm;
+export default Product;

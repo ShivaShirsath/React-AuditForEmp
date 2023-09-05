@@ -1,25 +1,24 @@
 import { useEffect, useState } from "react";
-import api from "../../utils/api";
+import api from "../utils/api";
 import { Link } from "react-router-dom";
-import { Loader } from "../../assets/Loader";
-import Toggle from 'react-bootstrap-toggle';
+import { Loader } from "../assets/Loader";
+import Toggle from "react-bootstrap-toggle";
 /*
- * Component displaying a list of employees.
- * Fetches employee data from the API and provides actions like creating, editing and deleting.
+ * Component displaying a list of items.
+ * Fetches item data from the API and provides actions like creating, editing and deleting.
  */
-function EmployeeList() {
-  const [employees, setEmployees] = useState([]);
+function ItemList({ name, path }) {
+  const [items, setItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isAssending, setIsAssending] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
 
-  // Fetch employees on component mount
-
-  async function fetchEmployees() {
+  // Fetch items on component mount
+  async function fetchItems() {
     setIsLoading(true);
-    const response = await api.get(`/emp?page=${currentPage}`);
-    setEmployees(response.data.data);
+    const response = await api.get(`/${path}?page=${currentPage}`);
+    setItems(response.data.data);
     setTotalPages(response.data.totalPages);
     setTimeout(() => {
       document.querySelector("dialog").close();
@@ -31,24 +30,24 @@ function EmployeeList() {
     if (currentPage === 0) {
       setCurrentPage(1);
     } else {
-      fetchEmployees();
+      fetchItems();
     }
-  }, [currentPage]);
+  }, [currentPage, name, path]);
 
   useEffect(() => {
-    setEmployees(employees.slice()
-      .reverse())
+    setItems(items.slice().reverse());
   }, [isAssending]);
-  // Delete employee by ID
+  
+  // Delete item by ID
   const handleDelete = async (id) => {
-    if (confirm("Do you want to delete this Employee")) {
+    if (confirm("Do you want to delete this Item")) {
       setIsLoading(true);
       try {
-        const response = await api.get(`/emp/${id}`);
-        await api.delete(`/emp/${id}`, { data: response.data });
+        const response = await api.get(`/${path}/${id}`);
+        await api.delete(`/${path}/${id}`, { data: response.data });
         window.location.reload();
       } catch (error) {
-        console.error("Error deleting employee:", error);
+        console.error("Error deleting item:", error);
       }
       setIsLoading(false);
     }
@@ -60,57 +59,63 @@ function EmployeeList() {
     </dialog>
   ) : (
     <>
-      <div style={{ textAlign: 'right' }}>
+      <div
+        style={{
+          textAlign: "right",
+          opacity: items.length === 0 ? 0 : 1,
+          pointerEvents: items.length === 0 ? "none" : "auto",
+        }}
+      >
         <Toggle
           onClick={() => {
             setIsAssending(!isAssending);
           }}
-          on={'Assending'}
-          off={'Decending'}
+          on={"Assending"}
+          off={"Decending"}
           size="xs"
           offstyle="danger"
           active={isAssending}
         />
       </div>
       <h2>
-        Employees{" "}
+        {name}s
         <Link to={"add"} className="btn btn-success btn-sm text-white ms-3">
           <i className="bi bi-person-plus"></i> Create
         </Link>
       </h2>
-      {!(employees.length === 0) ? (
+      {!(items.length === 0) ? (
         <>
           <table className="table">
             <thead>
               <tr>
-                <th>
-                  ID
-                </th>
+                <th>ID</th>
                 <th>Name</th>
                 <th className="text-center">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {employees.map((employee) => (
-                <tr key={employee.employeeId}>
-                  <td>{employee.employeeId}</td>
-                  <td>{employee.name}</td>
+              {items.map((item) => (
+                <tr key={item[`${name.toLowerCase()}Id`]}>
+                  <td>{item[`${name.toLowerCase()}Id`]}</td>
+                  <td>{item.name}</td>
                   <td
                     style={{
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      gap: "1dvmin"
+                      gap: "1dvmin",
                     }}
                   >
                     <Link
-                      to={"edit/" + employee.employeeId}
+                      to={"edit/" + item[`${name.toLowerCase()}Id`]}
                       className="btn btn-sm btn-primary text-white"
                     >
                       <i className="bi bi-pencil-square"></i> Edit
                     </Link>
                     <button
-                      onClick={() => handleDelete(employee.employeeId)}
+                      onClick={() =>
+                        handleDelete(item[`${name.toLowerCase()}Id`])
+                      }
                       className="btn btn-sm btn-danger text-white"
                     >
                       <i className="bi bi-person-x"></i> Delete
@@ -143,10 +148,10 @@ function EmployeeList() {
           </div>
         </>
       ) : (
-        <>Employess Not Available !</>
+        <>{name}s Not Available !</>
       )}
     </>
   );
 }
 
-export default EmployeeList;
+export default ItemList;
